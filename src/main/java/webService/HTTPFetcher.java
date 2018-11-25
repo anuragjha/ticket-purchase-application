@@ -21,6 +21,7 @@ public class HTTPFetcher {
 	//private URL url;
 	private HttpURLConnection conn;
 
+
 	/**
 	 * 
 	 */
@@ -29,6 +30,7 @@ public class HTTPFetcher {
 		try {
 			URL url = new URL(urlString);
 			this.conn = (HttpURLConnection)url.openConnection();
+			
 
 		} catch (MalformedURLException e) {
 			System.out.println("URL not in correct format");
@@ -38,6 +40,14 @@ public class HTTPFetcher {
 			e.printStackTrace();
 		}
 
+	}
+	
+	
+	/**
+	 * @return the conn
+	 */
+	public HttpURLConnection getConn() {
+		return conn;
 	}
 
 

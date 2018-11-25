@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import jsonPack.Proj4JsonReader;
+import jsonPack.Proj4HTTPReader;
 import jsonPack.ReqParamsInJson;
 
 /**
@@ -82,7 +82,7 @@ public class EventsServicesCallerServlet extends HttpServlet {
 			System.out.println("good good -> in POST /events/create or create/"); 
 			//TODO : call event service api - POST /create
 			
-			////////this.postCreate(resp);
+			this.postCreate(resp, new Proj4HTTPReader().httpBody(req)); //
 		
 		} else if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) 
 				&& subPaths[2].equals("purchase") && (subPaths[3].matches("[0-9]+"))  ) {
@@ -100,7 +100,7 @@ public class EventsServicesCallerServlet extends HttpServlet {
 
 		System.out.println("getContentLength :" + req.getContentLength());
 		if(req.getContentLength() > 0) {
-			ReqParamsInJson reqParams = new Proj4JsonReader().reqParamsInJson(req);
+			ReqParamsInJson reqParams = new Proj4HTTPReader().reqParamsInJson(req);
 			System.out.println("reqParams: " + reqParams.getTickets());
 		}
 	}
@@ -109,6 +109,31 @@ public class EventsServicesCallerServlet extends HttpServlet {
 	////////////////////////////////////////////////////////
 	
 	
+	private void postCreate(HttpServletResponse resp, String httpBody) {
+		String myUrl = "http://localhost:7071/create";
+		HTTPFetcher http = new HTTPFetcher(myUrl);
+		//http.fetch(myUrl);
+		http.setRequestMethod("POST");
+		http.setRequestProperty("Accept-Charset", "UTF-8");
+		http.setRequestProperty("Content-Type", "application/json");
+		try {
+			http.getConn().getOutputStream().write(httpBody.getBytes("UTF-8"));
+		} catch (IOException e1) {
+			System.out.println("Error in getting output stream");
+			e1.printStackTrace();
+		}
+		http.setDoOutput(true);
+		http.connect();
+
+		try {
+			resp.getOutputStream().println(/*http.readResponseHeader() + */http.readResponseBody());
+		} catch (IOException e) {
+			System.out.println("Error in getting output stream");
+			e.printStackTrace();
+		}	
+		
+	}
+
 	private void getEventsList(HttpServletResponse resp) {
 		String myUrl = "http://localhost:7071/list";
 		HTTPFetcher http = new HTTPFetcher(myUrl);

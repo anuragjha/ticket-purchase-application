@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
@@ -14,9 +15,9 @@ import com.google.gson.Gson;
  * @author anuragjha
  *
  */
-public class Proj4JsonReader {
+public class Proj4HTTPReader {
 
-	public Proj4JsonReader() {
+	public Proj4HTTPReader() {
 
 	}
 	
@@ -67,6 +68,8 @@ public class Proj4JsonReader {
 			return new String(bytes, StandardCharsets.UTF_8);
 		 
 	 }
+	 
+
 
 	
 
