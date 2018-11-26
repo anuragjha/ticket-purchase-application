@@ -16,7 +16,7 @@ import java.util.Map;
  * @author anuragjha
  *
  */
-public class HTTPFetcher {
+public class HTTPConnect {
 
 	//private URL url;
 	private HttpURLConnection conn;
@@ -25,7 +25,7 @@ public class HTTPFetcher {
 	/**
 	 * 
 	 */
-	public HTTPFetcher(String urlString) {
+	public HTTPConnect(String urlString) {
 
 		try {
 			URL url = new URL(urlString);
@@ -124,7 +124,7 @@ public class HTTPFetcher {
 	public static void main(String[] args) {
 
 		String myUrl = "http://localhost:7071/list";
-		HTTPFetcher http = new HTTPFetcher(myUrl);
+		HTTPConnect http = new HTTPConnect(myUrl);
 		//http.fetch(myUrl);
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");

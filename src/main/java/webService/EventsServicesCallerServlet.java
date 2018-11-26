@@ -82,7 +82,7 @@ public class EventsServicesCallerServlet extends HttpServlet {
 			System.out.println("good good -> in POST /events/create or create/"); 
 			//TODO : call event service api - POST /create
 			
-			this.postCreate(resp, new Proj4HTTPReader().httpBody(req)); //
+			this.postCreate(resp, new Proj4HTTPReader().httpBody(req)); ///////
 		
 		} else if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) 
 				&& subPaths[2].equals("purchase") && (subPaths[3].matches("[0-9]+"))  ) {
@@ -90,6 +90,8 @@ public class EventsServicesCallerServlet extends HttpServlet {
 			System.out.println("good good -> in POST /events/{eventid}/purchase/{userid}");
 			//TODO: call event service api - POST /purchase/{eventid}
 			//TODO: call users service api - POST /{userid}/tickets/add 
+			
+			this.postPurchase(resp, new Proj4HTTPReader().httpBody(req)); ///////// /// //// /// // /
 		}
 		else {
 
@@ -99,34 +101,75 @@ public class EventsServicesCallerServlet extends HttpServlet {
 
 
 		System.out.println("getContentLength :" + req.getContentLength());
-		if(req.getContentLength() > 0) {
-			ReqParamsInJson reqParams = new Proj4HTTPReader().reqParamsInJson(req);
-			System.out.println("reqParams: " + reqParams.getTickets());
-		}
+		//if(req.getContentLength() > 0) {
+		//	ReqParamsInJson reqParams = new Proj4HTTPReader().reqParamsInJson(req);
+		//	System.out.println("reqParams: " + reqParams.getTickets());
+		//}
 	}
 	
 	
 	////////////////////////////////////////////////////////
 	
 	
-	private void postCreate(HttpServletResponse resp, String httpBody) {
-		String myUrl = "http://localhost:7071/create";
-		HTTPFetcher http = new HTTPFetcher(myUrl);
-		//http.fetch(myUrl);
-		http.setRequestMethod("POST");
-		http.setRequestProperty("Accept-Charset", "UTF-8");
-		http.setRequestProperty("Content-Type", "application/json");
+	private void postPurchase(HttpServletResponse resp, String httpBody) {
+		System.out.println("httpBody in postCreate: " + httpBody);
+		
+		String myUrl = "http://localhost:7071/purchase/345";
+		HTTPConnect httpConn = new HTTPConnect(myUrl);
+		
+		httpConn.setDoOutput(true);
+		httpConn.setRequestMethod("POST");
+		httpConn.setRequestProperty("Accept-Charset", "UTF-8");
+		httpConn.setRequestProperty("Content-Type", "application/json");
+		
+		httpConn.connect();
+		
 		try {
-			http.getConn().getOutputStream().write(httpBody.getBytes("UTF-8"));
+			httpConn.getConn().getOutputStream().write(httpBody.getBytes("UTF-8")); 
+			httpConn.getConn().getOutputStream().flush();
 		} catch (IOException e1) {
 			System.out.println("Error in getting output stream");
 			e1.printStackTrace();
 		}
-		http.setDoOutput(true);
-		http.connect();
-
+		
+		
 		try {
-			resp.getOutputStream().println(/*http.readResponseHeader() + */http.readResponseBody());
+			resp.getOutputStream().println(httpConn.readResponseBody());
+		} catch (IOException e) {
+			System.out.println("Error in getting output stream");
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	
+
+	private void postCreate(HttpServletResponse resp, String httpBody) {
+		System.out.println("httpBody in postCreate: " + httpBody);
+		
+		String myUrl = "http://localhost:7071/create";
+		HTTPConnect httpConn = new HTTPConnect(myUrl);
+		//http.fetch(myUrl);
+		httpConn.setDoOutput(true);
+		httpConn.setRequestMethod("POST");
+		httpConn.setRequestProperty("Accept-Charset", "UTF-8");
+		httpConn.setRequestProperty("Content-Type", "application/json");
+		
+		httpConn.connect();
+		
+		try {
+			httpConn.getConn().getOutputStream().write(httpBody.getBytes("UTF-8")); 
+			httpConn.getConn().getOutputStream().flush();
+		} catch (IOException e1) {
+			System.out.println("Error in getting output stream");
+			e1.printStackTrace();
+		}
+		
+		
+		// response - httpConn.readResponseBody()
+		try {
+			resp.getOutputStream().println(httpConn.readResponseBody());
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
 			e.printStackTrace();
@@ -136,7 +179,7 @@ public class EventsServicesCallerServlet extends HttpServlet {
 
 	private void getEventsList(HttpServletResponse resp) {
 		String myUrl = "http://localhost:7071/list";
-		HTTPFetcher http = new HTTPFetcher(myUrl);
+		HTTPConnect http = new HTTPConnect(myUrl);
 		//http.fetch(myUrl);
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");
@@ -154,7 +197,7 @@ public class EventsServicesCallerServlet extends HttpServlet {
 	private void getEvent(HttpServletResponse resp, String eventid) {
 		// TODO Auto-generated method stub
 		String myUrl = "http://localhost:7071/"+eventid;
-		HTTPFetcher http = new HTTPFetcher(myUrl);
+		HTTPConnect http = new HTTPConnect(myUrl);
 		//http.fetch(myUrl);
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");

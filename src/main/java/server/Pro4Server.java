@@ -19,6 +19,7 @@ import handlers.BlockingServlet;
 public class Pro4Server {
 
 	private Server jettyServer;
+
 	private boolean shouldRun;
 
 	private ServletHandler handler;
@@ -35,6 +36,13 @@ public class Pro4Server {
 		this.initialize();
 	}
 
+	/**
+	 * @return the jettyServer
+	 */
+	public Server getJettyServer() {
+		return jettyServer;
+	}
+	
 	private void initialize() {
 
 		this.shouldRun = true;

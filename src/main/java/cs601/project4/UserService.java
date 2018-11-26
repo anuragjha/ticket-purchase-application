@@ -3,11 +3,11 @@
  */
 package cs601.project4;
 
+import org.eclipse.jetty.servlet.ServletHandler;
+
 import server.Pro4Server;
 import userService.UserCreateServlet;
-import userService.UserDetailsServlet;
-import userService.UserEventTicketsAddServlet;
-import userService.UserEventTicketsTransferServlet;
+import userService.UserServlet;
 
 /**
 User Service - The user service will manage the user account information, including the events 
@@ -38,12 +38,34 @@ public class UserService {
 		POST /{userid}/tickets/add
 		POST /{userid}/tickets/transfer
 		 */
-		server.addMapping(UserCreateServlet.class, "/create");
-		server.addMapping(UserDetailsServlet.class, "/*");
-		server.addMapping(UserEventTicketsAddServlet.class, "/*/tickets/add");
-		server.addMapping(UserEventTicketsTransferServlet.class, "/*/tickets/transfer");
+		
+		//server.addMapping(UserCreateServlet.class, "/create");
+		//server.addMapping(UserServlet.class, "/*");
+
+//		server.addMapping(UserDetailsServlet.class, "/*"); //get
+//		server.addMapping(UserEventTicketsAddServlet.class, "/*/tickets/add"); //post
+//		server.addMapping(UserEventTicketsTransferServlet.class, "/*/tickets/transfer"); //post
+		
+		//ServletContextHandler sch = new ServletContextHandler();
+		//sch.setContextPath("/*");
+		//server.getJettyServer().setHandler(sch);
+		
+		//sch.addServlet(new ServletHolder(new UserCreateServlet()), "/create");
+		//sch.addServlet(new ServletHolder(new UserDetailsServlet()), "/*");
+		//sch.addServlet(new ServletHolder(new UserEventTicketsAddServlet()),);
+		//sch.addServlet(new ServletHolder(new UserEventTicketsTransferServlet()), "/*./tickets/transfer");
+	
+		ServletHandler handler = new ServletHandler();
+		handler.addServletWithMapping(UserCreateServlet.class, "/create");
+		handler.addServletWithMapping(UserServlet.class, "/*");
+		//handler.addServletWithMapping(UserEventTicketsAddServlet.class, "*/tickets/add");
+		//handler.addServletWithMapping(UserDetailsServlet.class, "/*/tickets/transfer");
+		server.getJettyServer().setHandler(handler);
+		
+		
 		
 		server.start();
+		
 		
 	}
 

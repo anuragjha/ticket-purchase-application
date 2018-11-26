@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import jsonPack.Proj4HTTPReader;
+import jsonPack.ReqParamsInJson;
+
 /**
  * @author anuragjha
  *
@@ -30,7 +33,10 @@ public class EventCreateServlet extends HttpServlet {
 		System.out.println("in doPost of EventCreateServlet");
 		
 		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
-
+		
+		//System.out.println("req body to EvenCreateServlet: " + new Proj4HTTPReader().httpBody(req));
+		
+		
 		String[] subPaths = req.getRequestURI().split("/");
 		System.out.println("length: " + subPaths.length);
 		for(String path : subPaths) {
@@ -38,14 +44,22 @@ public class EventCreateServlet extends HttpServlet {
 		}
 		
 		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
+			
+			ReqParamsInJson reqParams = new Proj4HTTPReader().reqParamsInJson(req);
+			String respResult = "Response Result: params in webservice req body\n" 
+			+ "userid: " + reqParams.getUserid() + "\n"
+			+ "eventName: " + reqParams.getEventname() + "\n"
+			+ "numTickets: " + reqParams.getNumtickets();
+			System.out.println("respResult: " + respResult);
+			
 			//TODO : add a event in database
-			String result = "Create a new Event";
+			//String result = "Create a new Event";
 			resp.setStatus(HttpServletResponse.SC_OK);
 			resp.setContentType("text/html");
 			resp.setCharacterEncoding("UTF-8");
-			resp.setContentLength(result.length());
+			resp.setContentLength(respResult.length());
 			
-			resp.getWriter().println(result);
+			resp.getWriter().println(respResult);
 			resp.getWriter().flush();
 			
 		} else {
