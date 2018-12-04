@@ -47,7 +47,7 @@ public class UsersServicesCallerServlet extends HttpServlet {
 			this.getUser(resp, subPaths[1]); //////////////// /////// //// /// // /
 
 		} else {
-
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			System.out.println("bad bad -> in get of /users/{userid}");
 		}
 
@@ -71,7 +71,8 @@ public class UsersServicesCallerServlet extends HttpServlet {
 			
 			//TODO: call users service api - POST /{userid}/tickets/add  to update ticket table
 			this.postCreate(resp, new HttpReqUtil().httpBody(req));
-			
+			System.out.println("UserServicesCallerServlet : postCreate");
+		
 		} else if ((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) 
 				&& subPaths[2].equals("tickets") && (subPaths[3].equals("transfer"))) {
 			System.out.println("good good -> in POST /users/{userid}/tickets/transfer");
@@ -81,6 +82,7 @@ public class UsersServicesCallerServlet extends HttpServlet {
 			this.postTransfer(resp, req);
 
 		} else {
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			System.out.println("bad bad in do post of UserServiceServlet");
 		}
 

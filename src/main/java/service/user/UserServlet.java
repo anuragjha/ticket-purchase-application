@@ -76,6 +76,10 @@ public class UserServlet extends HttpServlet {
 			System.out.println("good good : will call transfer tickets api");
 			new UserTicketsTransferHandler().handle(req, resp);      /////////////////
 			
+		} else {
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			System.out.println("UserServlet : bad bad -> in get of /*");
+		
 		}
 
 	}

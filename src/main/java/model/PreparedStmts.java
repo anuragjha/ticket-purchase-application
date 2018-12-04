@@ -19,7 +19,7 @@ public class PreparedStmts {
 	private PreparedStatement eventsTableAddEntry;
 	private PreparedStatement eventsTableGetEventList;
 	private PreparedStatement eventsTableGetEventDetails;
-	private PreparedStatement transactionTableAddEntry;
+	private PreparedStatement transactionsTableAddEntry;
 	private PreparedStatement eventsTableUpdateForTickets;
 	private PreparedStatement ticketsTableUpdateForTickets;
 	private PreparedStatement userTableAddEntry;
@@ -72,15 +72,15 @@ public class PreparedStmts {
 
 
 	/**
-	 * transactionTableAddEntry : adds a row to transaction table
+	 * transactionsTableAddEntry : adds a row to transactions table
 	 * @creates transactionid
 	 * @param eventid, userid, numtickets, numtransfer, targetuserid 
 	 * @throws SQLException
 	 *
-	 * @return the PreparedStatement transactionTableAddEntry
+	 * @return the PreparedStatement transactionsTableAddEntry
 	 */
-	public PreparedStatement getTransactionTableAddEntry() {
-		return transactionTableAddEntry;
+	public PreparedStatement getTransactionsTableAddEntry() {
+		return transactionsTableAddEntry;
 	}
 
 
@@ -183,7 +183,7 @@ public class PreparedStmts {
 			this.userTableAddEntry();
 			this.userTableGetUserDetails();
 			
-			this.transactionTableAddEntry();
+			this.transactionsTableAddEntry();
 			
 		} catch (SQLException e) {
 			System.out.println("Error in preparing sql stmts");
@@ -267,15 +267,15 @@ public class PreparedStmts {
 	 */
 
 	/**
-	 * transactionTableAddEntry : adds a row to transaction table
+	 * transactionsTableAddEntry : adds a row to transactions table
 	 * @creates transactionid
 	 * @param eventid, userid, numtickets, numtransfer, targetuserid 
 	 * @throws SQLException
 	 */
-	private void transactionTableAddEntry() throws SQLException {
-		String stmt = "insert into transaction(eventid, userid, numtickets, numtransfer, targetuserid) "
+	private void transactionsTableAddEntry() throws SQLException {
+		String stmt = "insert into transactions(eventid, userid, numtickets, numtransfer, targetuserid) "
 				+ "values(?, ?, ?, ?, ?)";
-		transactionTableAddEntry = con.prepareStatement(stmt);
+		transactionsTableAddEntry = con.prepareStatement(stmt);
 	}
 	
 	/**
@@ -395,8 +395,8 @@ public class PreparedStmts {
 	 // check if targetuser is present in user table
 	 // check if for a particular userID and eventID a row exists in tickets table
 	  // if exists, then is tickets <= numTickets of tickets table, if yes then
-	 ## insert a new row in transaction table
-	 insert into transaction(eventID, userID, numTickets, numTransfer, targetUserID)
+	 ## insert a new row in transactions table
+	 insert into transactions(eventID, userID, numTickets, numTransfer, targetUserID)
 	 	values(eventid, userid, 0, tickets, targetuser)
 	 ## update tickets table first for user and then for targetUser
 	 # for user -

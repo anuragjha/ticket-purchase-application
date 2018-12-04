@@ -59,7 +59,7 @@ public class HttpReqUtil {
 				try {
 					read += req.getInputStream().read(bytes, read, (bytes.length-read));
 				} catch (IOException e) {
-					System.out.println("Error in getting the input stream");
+					System.out.println("HttpReqUtil:getHttpBody - Error in getting the input stream");
 					e.printStackTrace();
 				}
 			}

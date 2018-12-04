@@ -58,7 +58,7 @@ public class EventsServicesCallerServlet extends HttpServlet {
 				this.getEvent(resp, subPaths[1]);
 			}
 			else { // /76!5
-
+				
 				System.out.println("bad bad : not correct");
 			}
 		}
@@ -148,7 +148,7 @@ public class EventsServicesCallerServlet extends HttpServlet {
 			e1.printStackTrace();
 		}
 		
-		
+		// writing responsebody
 		try {
 			resp.getOutputStream().println(httpConn.readResponseBody());
 		} catch (IOException e) {
@@ -184,9 +184,18 @@ public class EventsServicesCallerServlet extends HttpServlet {
 		}
 		
 		
-		// response - httpConn.readResponseBody()
+		// response - httpConn.readResponseBody() - in post create
 		try {
-			resp.getOutputStream().println(httpConn.readResponseBody());
+			//resp.setStatus(HttpServletResponse.SC_OK);
+			//resp.setContentType("application/json");
+			
+			
+			//System.out.println("Reaching here - read response of EventsServicesServlet");
+			//String responseBody = httpConn.readResponseBody();
+			//resp.getWriter().println(responseBody);
+			//resp.getWriter().flush();
+			System.out.println("!!!!!!!!!!! here - read response of EventsServicesServlet");
+			resp.getOutputStream().println(httpConn.readResponseBody()); //error here
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
 			e.printStackTrace();
@@ -203,6 +212,8 @@ public class EventsServicesCallerServlet extends HttpServlet {
 		http.connect();
 
 		try {
+			resp.setStatus(HttpServletResponse.SC_OK);
+			resp.setContentType("application/json");
 			resp.getOutputStream().println(http.readResponseBody());
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
@@ -221,6 +232,8 @@ public class EventsServicesCallerServlet extends HttpServlet {
 		http.connect();
 
 		try {
+			//resp.setStatus(HttpServletResponse.SC_OK);
+			//resp.setContentType("application/json");
 			resp.getOutputStream().println(http.readResponseBody());
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");

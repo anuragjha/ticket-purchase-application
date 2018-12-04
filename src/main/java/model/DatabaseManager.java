@@ -36,6 +36,35 @@ public class DatabaseManager {
 	public Connection getCon() {
 		return con;
 	}
+	
+	public void setAutoCommit(boolean value) {
+		try {
+			con.setAutoCommit(value);
+			
+		} catch(SQLException e) {
+		System.out.println("Error in changing Auto Commit mode");
+			e.printStackTrace();
+		}
+	}
+	
+	public void commit() {
+		try {
+			con.commit();
+		} catch (SQLException e) {
+			System.out.println("Error in commit");
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void rollback() {
+		try {
+			con.rollback();
+		} catch (SQLException e) {
+			System.out.println("Error in rollback");
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * @return the preparedstmts
@@ -59,17 +88,17 @@ public class DatabaseManager {
 	}
 
 
-	public int transactionTableAddEntry(int eventid, int userid, int numtickets, int numtransfer, int targetuserid) {
-		return this.getTransactionTableAddEntry(eventid, userid, numtickets, numtransfer, targetuserid);
+	public int transactionsTableAddEntry(int eventid, int userid, int numtickets, int numtransfer, int targetuserid) {
+		return this.getTransactionsTableAddEntry(eventid, userid, numtickets, numtransfer, targetuserid);
 	}
 
 
-	public ResultSet eventsTableUpdateForTickets(int avail, int purchased, int eventid) {
+	public int eventsTableUpdateForTickets(int avail, int purchased, int eventid) {
 		return this.getEventsTableUpdateForTickets(avail, purchased, eventid);
 	}
 
 
-	public ResultSet ticketsTableUpdateForTickets(int numtickets, int eventid, int userid) {
+	public int ticketsTableUpdateForTickets(int numtickets, int eventid, int userid) {
 		return this.getTicketsTableUpdateForTickets(numtickets, eventid, userid);
 	}
 
@@ -162,7 +191,7 @@ public class DatabaseManager {
 
 			result = sqlStmt.executeQuery();
 
-			//this.getCon().close();
+			
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -175,11 +204,11 @@ public class DatabaseManager {
 
 
 
-	private synchronized int getTransactionTableAddEntry(int eventid, int userid, int numtickets, int numtransfer,
+	private synchronized int getTransactionsTableAddEntry(int eventid, int userid, int numtickets, int numtransfer,
 			int targetuserid) {
 		int transactionid = 0;
 
-		PreparedStatement sqlStmt = preparedStmts.getTransactionTableAddEntry();
+		PreparedStatement sqlStmt = preparedStmts.getTransactionsTableAddEntry();
 		try {
 			sqlStmt.setInt(1, eventid);
 			sqlStmt.setInt(2, userid);
@@ -210,18 +239,25 @@ public class DatabaseManager {
 	}
 
 
-	private synchronized ResultSet getEventsTableUpdateForTickets(int avail, int purchased, int eventid) {
+	private synchronized int getEventsTableUpdateForTickets(int avail, int purchased, int eventid) {
 
-		ResultSet result = null;
-
-		PreparedStatement sqlStmt = preparedStmts.getEventsTableAddEntry();
+		int result = 0;
+		PreparedStatement sqlStmt = preparedStmts.getEventsTableUpdateForTickets();
 		try {
 			sqlStmt.setInt(1, avail);
 			sqlStmt.setInt(2, purchased);
 			sqlStmt.setInt(3, eventid);
 
-			result = sqlStmt.executeQuery();
-
+			//result = sqlStmt.executeQuery();
+			result = sqlStmt.executeUpdate();
+			//if( > 0) {   //executing update
+				//ResultSet insertID = preparedStmts.getLastInsertID().executeQuery();
+				//if(insertID.next()) {
+				//	result = insertID.getInt(1);
+				//	System.out.println("last insert id: " + result);	
+				//}
+			//}
+			
 			//this.getCon().close();
 
 		} catch (SQLException e) {
@@ -235,18 +271,25 @@ public class DatabaseManager {
 
 
 
-	private synchronized ResultSet getTicketsTableUpdateForTickets(int numtickets, int eventid, int userid) {
+	private synchronized int getTicketsTableUpdateForTickets(int numtickets, int eventid, int userid) {
 
-		ResultSet result = null;
+		int result = 0;
 
-		PreparedStatement sqlStmt = preparedStmts.getEventsTableAddEntry();
+		PreparedStatement sqlStmt = preparedStmts.getTicketsTableUpdateForTickets();
 		try {
 			sqlStmt.setInt(1, numtickets);
 			sqlStmt.setInt(2, eventid);
 			sqlStmt.setInt(3, userid);
 
-			result = sqlStmt.executeQuery();
-
+			//result = sqlStmt.executeQuery();
+			if(sqlStmt.executeUpdate() > 0) {   //executing update
+				ResultSet insertID = preparedStmts.getLastInsertID().executeQuery();
+				if(insertID.next()) {
+					eventid = insertID.getInt(1);
+					System.out.println("last insert id: " + eventid);
+					
+				}
+			}
 			//this.getCon().close();
 
 		} catch (SQLException e) {
@@ -263,7 +306,7 @@ public class DatabaseManager {
 
 		int userid = 0;
 
-		PreparedStatement sqlStmt = preparedStmts.getEventsTableAddEntry();
+		PreparedStatement sqlStmt = preparedStmts.getUserTableAddEntry();
 		try {
 			sqlStmt.setString(1, username);
 
@@ -342,7 +385,7 @@ public class DatabaseManager {
 			sqlStmt.setInt(1, eventid);
 			sqlStmt.setInt(2, userid);
 			sqlStmt.setInt(3, numtickets);
-
+			
 			//boolean sqlStatus = sqlStmt.execute();
 			//TODO://retrieving value
 			if(sqlStmt.executeUpdate() > 0) {   //executing update
@@ -362,6 +405,7 @@ public class DatabaseManager {
 		}
 
 		return ticketid;
+		
 	}
 
 
