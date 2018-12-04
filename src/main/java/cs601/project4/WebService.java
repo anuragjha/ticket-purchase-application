@@ -1,8 +1,8 @@
 package cs601.project4;
 
 import server.Pro4Server;
-import webService.EventsServicesCallerServlet;
-import webService.UsersServicesCallerServlet;
+import service.web.EventsServicesCallerServlet;
+import service.web.UsersServicesCallerServlet;
 
 /**
 Web Front End - The web front end will implement an external web service API for the 
@@ -31,8 +31,11 @@ public class WebService {
 
 	
 	public static void main(String[] args) {
+		
+		System.out.println("Web Service");
 		Pro4Server server = new Pro4Server(7070);
-
+		server.initialize(10, 100, 120);
+		
 		server.addMapping(EventsServicesCallerServlet.class, "/events/*");
 		server.addMapping(UsersServicesCallerServlet.class, "/users/*");
 		

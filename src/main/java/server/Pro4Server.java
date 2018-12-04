@@ -9,7 +9,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import handlers.BlockingServlet;
+import cs601.project4.BlockingServlet;
 
 
 /**
@@ -33,7 +33,7 @@ public class Pro4Server {
 	public Pro4Server(int port) {
 
 		this.PORT = port;
-		this.initialize();
+		
 	}
 
 	/**
@@ -43,11 +43,11 @@ public class Pro4Server {
 		return jettyServer;
 	}
 	
-	private void initialize() {
+	public void initialize(int minThreads, int maxThreads, int timeout) {
 
 		this.shouldRun = true;
 
-		QueuedThreadPool threadpool = getThreadpool(10, 100, 120);
+		QueuedThreadPool threadpool = getThreadpool(minThreads, maxThreads, timeout);
 
 		this.jettyServer = new Server(threadpool);
 
@@ -55,15 +55,9 @@ public class Pro4Server {
 		connector.setPort(this.PORT);
 		this.jettyServer.setConnectors(new Connector[] {connector});
 
-
+		
 		this.handler = new ServletHandler();
 		this.jettyServer.setHandler(this.handler);
-		//this.addMapping(BlockingServlet.class, "/status");
-
-		//this.jettyServer.setHandler(this.handler);
-
-
-
 
 	}
 
@@ -73,35 +67,33 @@ public class Pro4Server {
 	}
 
 	public void addMapping(Class clazz, String path) {
-		//this.handler.addServletWithMapping(BlockingServlet.class, "/status");
-		//((ServletHandler)this.jettyServer.getHandler()).addServletWithMapping(BlockingServlet.class, "/status");
-
-		//TODO : handle such that only httpservlet class can be mapped
+		//only HttpServlet sub class can be mapped
 		if(clazz.getGenericSuperclass().toString().endsWith(".HttpServlet")) {
-			((ServletHandler) this.jettyServer.getHandler()).addServletWithMapping(clazz, path);
-			System.out.println("servlet superclass: "+clazz.getGenericSuperclass());
+
+			this.handler.addServletWithMapping(clazz, path);
+			//System.out.println("servlet superclass: "+clazz.getGenericSuperclass());
 		}
-		
-
-
-
 	}
+	
 
 	public void start() {
 		try {
-			this.jettyServer.start();
+			this.jettyServer.start();  //
+			System.out.println("Server Started");
 			this.jettyServer.join();
 		} catch (Exception e) {
-
+			System.out.println("Error in starting Jetty engine");
 			e.printStackTrace();
+			System.exit(1);
 		}
+		
 	}
 
 
 	public static void main(String[] args) {
 
 		Pro4Server ps = new Pro4Server(7070);
-		ps.initialize();
+		ps.initialize(10, 100, 120);
 		ps.addMapping(BlockingServlet.class, "/status");
 		ps.start();
 	}

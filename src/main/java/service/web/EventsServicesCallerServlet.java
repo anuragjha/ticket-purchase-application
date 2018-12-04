@@ -1,7 +1,7 @@
 /**
  * 
  */
-package webService;
+package service.web;
 
 import java.io.IOException;
 
@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import jsonPack.Proj4HTTPReader;
-import jsonPack.ReqParamsInJson;
+import cs601.project4.AppParams;
+import httpUtil.HttpConnection;
+import httpUtil.HttpReqUtil;
 
 /**
  * @author anuragjha
@@ -82,7 +83,7 @@ public class EventsServicesCallerServlet extends HttpServlet {
 			System.out.println("good good -> in POST /events/create or create/"); 
 			//TODO : call event service api - POST /create
 			
-			this.postCreate(resp, new Proj4HTTPReader().httpBody(req)); ///////
+			this.postCreate(req, resp); ///////
 		
 		} else if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) 
 				&& subPaths[2].equals("purchase") && (subPaths[3].matches("[0-9]+"))  ) {
@@ -90,8 +91,8 @@ public class EventsServicesCallerServlet extends HttpServlet {
 			System.out.println("good good -> in POST /events/{eventid}/purchase/{userid}");
 			//TODO: call event service api - POST /purchase/{eventid}
 			//TODO: call users service api - POST /{userid}/tickets/add 
-			
-			this.postPurchase(resp, new Proj4HTTPReader().httpBody(req)); ///////// /// //// /// // /
+			AppParams params = new AppParams();
+			this.postPurchase(req, resp, subPaths[1], subPaths[3]); ///////// /// //// /// // /
 		}
 		else {
 
@@ -111,11 +112,22 @@ public class EventsServicesCallerServlet extends HttpServlet {
 	////////////////////////////////////////////////////////
 	
 	
-	private void postPurchase(HttpServletResponse resp, String httpBody) {
-		System.out.println("httpBody in postCreate: " + httpBody);
+	private void postPurchase(HttpServletRequest req, HttpServletResponse resp, String eventid, String userid) {
+		HttpReqUtil reqUtil =  new HttpReqUtil();
+		//String httpBody = reqUtil.httpBody(req);
 		
-		String myUrl = "http://localhost:7071/purchase/345";
-		HTTPConnect httpConn = new HTTPConnect(myUrl);
+		System.out.println("eventid from subpath: " + eventid);
+		System.out.println("userid from subpath: " + userid);
+		//System.out.println("httpBody in postPurchase: " + httpBody);
+		
+		//TODO: build correct path and body
+		AppParams appParams = reqUtil.reqParamsFromJsonBody(req);
+		System.out.println("tickets from body: " + appParams.getTickets());
+		
+		
+		
+		String myUrl = "http://localhost:7071/purchase/" + eventid;
+		HttpConnection httpConn = new HttpConnection(myUrl);
 		
 		httpConn.setDoOutput(true);
 		httpConn.setRequestMethod("POST");
@@ -124,8 +136,12 @@ public class EventsServicesCallerServlet extends HttpServlet {
 		
 		httpConn.connect();
 		
+
+		String newReqBody = "{\n 	\"userid\": "+userid+","+ "\n	\"eventid\": "+
+				eventid+","+ "\n	\"tickets\": "+appParams.getTickets()+ "\n}";
+		System.out.println("new Req body: \n" + newReqBody);
 		try {
-			httpConn.getConn().getOutputStream().write(httpBody.getBytes("UTF-8")); 
+			httpConn.getConn().getOutputStream().write(newReqBody.getBytes("UTF-8")); 
 			httpConn.getConn().getOutputStream().flush();
 		} catch (IOException e1) {
 			System.out.println("Error in getting output stream");
@@ -145,11 +161,12 @@ public class EventsServicesCallerServlet extends HttpServlet {
 	
 	
 
-	private void postCreate(HttpServletResponse resp, String httpBody) {
+	private void postCreate(HttpServletRequest req, HttpServletResponse resp) {
+		String httpBody = new HttpReqUtil().httpBody(req);
 		System.out.println("httpBody in postCreate: " + httpBody);
 		
 		String myUrl = "http://localhost:7071/create";
-		HTTPConnect httpConn = new HTTPConnect(myUrl);
+		HttpConnection httpConn = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		httpConn.setDoOutput(true);
 		httpConn.setRequestMethod("POST");
@@ -179,14 +196,14 @@ public class EventsServicesCallerServlet extends HttpServlet {
 
 	private void getEventsList(HttpServletResponse resp) {
 		String myUrl = "http://localhost:7071/list";
-		HTTPConnect http = new HTTPConnect(myUrl);
+		HttpConnection http = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");
 		http.connect();
 
 		try {
-			resp.getOutputStream().println(http.readResponseHeader() + http.readResponseBody());
+			resp.getOutputStream().println(http.readResponseBody());
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
 			e.printStackTrace();
@@ -197,14 +214,14 @@ public class EventsServicesCallerServlet extends HttpServlet {
 	private void getEvent(HttpServletResponse resp, String eventid) {
 		// TODO Auto-generated method stub
 		String myUrl = "http://localhost:7071/"+eventid;
-		HTTPConnect http = new HTTPConnect(myUrl);
+		HttpConnection http = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");
 		http.connect();
 
 		try {
-			resp.getOutputStream().println(http.readResponseHeader() + http.readResponseBody());
+			resp.getOutputStream().println(http.readResponseBody());
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
 			e.printStackTrace();

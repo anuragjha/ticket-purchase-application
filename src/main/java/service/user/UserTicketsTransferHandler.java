@@ -1,12 +1,11 @@
 /**
  * 
  */
-package eventService;
+package service.user;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,19 +13,20 @@ import javax.servlet.http.HttpServletResponse;
  * @author anuragjha
  *
  */
-public class EventTicketsPurchaseServlet extends HttpServlet {
+public class UserTicketsTransferHandler {
 
 	/**
 	 * 
 	 */
-	public EventTicketsPurchaseServlet() {
+	public UserTicketsTransferHandler() {
 		// TODO Auto-generated constructor stub
 	}
-
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+	
+	
+	protected synchronized void handle(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		System.out.println("in doPost of EventTicketsPurchaseServlet");
+		
+		System.out.println("in doPost of UserEventTicketsTransferServlet");
 		
 		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
 
@@ -36,9 +36,11 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 			System.out.println("subpaths: " + path);
 		}
 		
-		if((subPaths.length == 3) && (subPaths[1].equals("purchase")) && (subPaths[2].matches("[0-9]+")) ) {
+		if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) && 
+				(subPaths[2].equals("tickets")) && (subPaths[3].equals("transfer")) ) {
 			//TODO : update data base for transaction & tickets table 
-			String result = "Purchase said amount of ticket for a particular user and event";
+			
+			String result = "Transfers tickets of a event from one user to otherr";
 			resp.setStatus(HttpServletResponse.SC_OK);
 			resp.setContentType("text/html");
 			resp.setCharacterEncoding("UTF-8");
@@ -46,13 +48,12 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 			
 			resp.getWriter().println(result);
 			resp.getWriter().flush();
+			
 			System.out.println("good good request");
 			
 		} else {
 			System.out.println("bad bad request");
 		}
-		
 	}
-	
-	
+
 }

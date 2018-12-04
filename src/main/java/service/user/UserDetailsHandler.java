@@ -1,11 +1,12 @@
 /**
  * 
  */
-package eventService;
+package service.user;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,19 +15,20 @@ import javax.servlet.http.HttpServletResponse;
  * @author anuragjha
  *
  */
-public class EventDetailsServlet extends HttpServlet {
+public class UserDetailsHandler {
 
 	/**
 	 * 
 	 */
-	public EventDetailsServlet() {
+	public UserDetailsHandler() {
 		// TODO Auto-generated constructor stub
 	}
+
 	
-	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		System.out.println("in doGet of EventDetailsServlet");
+		
+		System.out.println("in doGet of UserDetailsServlet");
 		
 		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
 
@@ -37,9 +39,9 @@ public class EventDetailsServlet extends HttpServlet {
 		}
 		
 		if((subPaths.length == 2) && (subPaths[1].matches("[0-9]+"))) {
-			System.out.println("good good -> in get /{eventid}/: /"+subPaths[1]); 
-			//TODO : query data base to get details of event
-			String result = "Details of an Event";
+			System.out.println("good good -> in get /{userid}/: /"+subPaths[1]); 
+			//TODO : query data base to get details of user
+			String result = "Get details of a user";
 			resp.setStatus(HttpServletResponse.SC_OK);
 			resp.setContentType("text/html");
 			resp.setCharacterEncoding("UTF-8");
@@ -49,8 +51,9 @@ public class EventDetailsServlet extends HttpServlet {
 			resp.getWriter().flush();
 		
 		} else {
-			System.out.println("bad bad -> in get /{eventid}/"); 
+			System.out.println("bad bad -> in get /{userid}"); 
 		}
+		
 	}
 
 }

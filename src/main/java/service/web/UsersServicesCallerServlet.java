@@ -1,7 +1,7 @@
 /**
  * 
  */
-package webService;
+package service.web;
 
 import java.io.IOException;
 
@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import jsonPack.Proj4HTTPReader;
+import httpUtil.HttpConnection;
+import httpUtil.HttpReqUtil;
 
 /**
  * @author anuragjha
@@ -65,18 +66,17 @@ public class UsersServicesCallerServlet extends HttpServlet {
 			System.out.println("subpaths: " + path);
 		}
 
-
+		
 		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
-			System.out.println("good good -> in POST /users/create or create/"); 
-			//TODO : call users service api - POST /create
-			this.postCreate(resp, new Proj4HTTPReader().httpBody(req));
-
-
-		} else if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) 
+			
+			//TODO: call users service api - POST /{userid}/tickets/add  to update ticket table
+			this.postCreate(resp, new HttpReqUtil().httpBody(req));
+			
+		} else if ((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) 
 				&& subPaths[2].equals("tickets") && (subPaths[3].equals("transfer"))) {
 			System.out.println("good good -> in POST /users/{userid}/tickets/transfer");
 			//TODO: call users service api - POST /{userid}/tickets/transfer
-			//TODO: call users service api - POST /{userid}/tickets/add  to update ticket table
+			
 
 			this.postTransfer(resp, req);
 
@@ -90,13 +90,48 @@ public class UsersServicesCallerServlet extends HttpServlet {
 
 	///////////////////////////////////////////////////////////////////
 
+//	private void postAdd(HttpServletResponse resp, HttpServletRequest req) {
+//		String httpBody = new HttpReqUtil().httpBody(req);
+//		System.out.println("httpBody in postTransfer: " + httpBody);
+//
+//		String myUrl = "http://localhost:7072"+req.getPathInfo();
+//		HttpConnection httpConn = new HttpConnection(myUrl);
+//		
+//		httpConn.setDoOutput(true);
+//		httpConn.setRequestMethod("POST");
+//		httpConn.setRequestProperty("Accept-Charset", "UTF-8");
+//		httpConn.setRequestProperty("Content-Type", "application/json");
+//
+//		httpConn.connect();
+//		
+//		try {
+//			httpConn.getConn().getOutputStream().write(httpBody.getBytes("UTF-8")); 
+//			httpConn.getConn().getOutputStream().flush();
+//		} catch (IOException e1) {
+//			System.out.println("Error in getting output stream");
+//			e1.printStackTrace();
+//		}
+//
+//
+//		// response - httpConn.readResponseBody()
+//		try {
+//			resp.getOutputStream().println(httpConn.readResponseBody());
+//		} catch (IOException e) {
+//			System.out.println("Error in getting output stream");
+//			e.printStackTrace();
+//		}	
+//
+//	}
+	
+	
+	
 
 	private void postTransfer(HttpServletResponse resp, HttpServletRequest req) {
-		String httpBody = new Proj4HTTPReader().httpBody(req);
+		String httpBody = new HttpReqUtil().httpBody(req);
 		System.out.println("httpBody in postTransfer: " + httpBody);
 
 		String myUrl = "http://localhost:7072"+req.getPathInfo();
-		HTTPConnect httpConn = new HTTPConnect(myUrl);
+		HttpConnection httpConn = new HttpConnection(myUrl);
 		
 		httpConn.setDoOutput(true);
 		httpConn.setRequestMethod("POST");
@@ -104,7 +139,7 @@ public class UsersServicesCallerServlet extends HttpServlet {
 		httpConn.setRequestProperty("Content-Type", "application/json");
 
 		httpConn.connect();
-		
+		//sending request body(json)
 		try {
 			httpConn.getConn().getOutputStream().write(httpBody.getBytes("UTF-8")); 
 			httpConn.getConn().getOutputStream().flush();
@@ -129,7 +164,7 @@ public class UsersServicesCallerServlet extends HttpServlet {
 		System.out.println("httpBody in postCreate: " + httpBody);
 
 		String myUrl = "http://localhost:7072/create";
-		HTTPConnect httpConn = new HTTPConnect(myUrl);
+		HttpConnection httpConn = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		httpConn.setDoOutput(true);
 		httpConn.setRequestMethod("POST");
@@ -162,7 +197,7 @@ public class UsersServicesCallerServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 
 		String myUrl = "http://localhost:7072/"+userid;
-		HTTPConnect http = new HTTPConnect(myUrl);
+		HttpConnection http = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");

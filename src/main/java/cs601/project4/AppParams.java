@@ -1,6 +1,6 @@
-package jsonPack;
+package cs601.project4;
 
-public class ReqParamsInJson {
+public class AppParams {
 	
 	private int userid;
 	private int eventid;
@@ -11,7 +11,7 @@ public class ReqParamsInJson {
 	private int targetuser;
 	
 	
-	public ReqParamsInJson() {
+	public AppParams() {
 		// TODO Auto-generated constructor stub
 	}
 

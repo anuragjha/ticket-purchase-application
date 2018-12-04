@@ -3,11 +3,11 @@
  */
 package cs601.project4;
 
-import eventService.EventCreateServlet;
-import eventService.EventDetailsServlet;
-import eventService.EventTicketsPurchaseServlet;
-import eventService.EventsListServlet;
 import server.Pro4Server;
+import service.event.EventCreateServlet;
+import service.event.EventDetailsServlet;
+import service.event.EventTicketsPurchaseServlet;
+import service.event.EventsListServlet;
 
 /**
 Event Service - The event service will manage the list of events and the number of tickets 
@@ -30,7 +30,10 @@ operations:
 public class EventService {
 
 	public static void main(String[] args) {
+		
+		System.out.println("Event Service");
 		Pro4Server server = new Pro4Server(7071);
+		server.initialize(10, 100, 120);
 
 		/*
 		POST /create

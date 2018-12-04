@@ -1,12 +1,11 @@
 /**
  * 
  */
-package userService;
+package service.user;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,20 +13,20 @@ import javax.servlet.http.HttpServletResponse;
  * @author anuragjha
  *
  */
-public class UserEventTicketsTransferServlet extends HttpServlet {
+public class UserTicketsAddHandler {
 
 	/**
 	 * 
 	 */
-	public UserEventTicketsTransferServlet() {
+	public UserTicketsAddHandler() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+	
+	protected synchronized void handle(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		System.out.println("in doPost of UserEventTicketsTransferServlet");
+		System.out.println("in doPost of UserEventTicketsAddServlet");
 		
 		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
 
@@ -38,10 +37,10 @@ public class UserEventTicketsTransferServlet extends HttpServlet {
 		}
 		
 		if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) && 
-				(subPaths[2].equals("tickets")) && (subPaths[3].equals("transfer")) ) {
+				(subPaths[2].equals("tickets")) && (subPaths[3].equals("add")) ) {
 			//TODO : update data base for transaction & tickets table 
 			
-			String result = "Transfers tickets of a event from one user to otherr";
+			String result = "Add tickets for a user";
 			resp.setStatus(HttpServletResponse.SC_OK);
 			resp.setContentType("text/html");
 			resp.setCharacterEncoding("UTF-8");
@@ -55,6 +54,7 @@ public class UserEventTicketsTransferServlet extends HttpServlet {
 		} else {
 			System.out.println("bad bad request");
 		}
+	
 	}
 
 }

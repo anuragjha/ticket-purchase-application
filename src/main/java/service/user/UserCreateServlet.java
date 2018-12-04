@@ -1,7 +1,7 @@
 /**
  * 
  */
-package userService;
+package service.user;
 
 import java.io.IOException;
 
@@ -14,20 +14,20 @@ import javax.servlet.http.HttpServletResponse;
  * @author anuragjha
  *
  */
-public class UserEventTicketsAddServlet extends HttpServlet {
+public class UserCreateServlet extends HttpServlet {
 
 	/**
 	 * 
 	 */
-	public UserEventTicketsAddServlet() {
+	public UserCreateServlet() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+	protected synchronized void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		System.out.println("in doPost of UserEventTicketsAddServlet");
+		System.out.println("in doPost of UserCreateServlet");
 		
 		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
 
@@ -37,11 +37,9 @@ public class UserEventTicketsAddServlet extends HttpServlet {
 			System.out.println("subpaths: " + path);
 		}
 		
-		if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) && 
-				(subPaths[2].equals("tickets")) && (subPaths[3].equals("add")) ) {
-			//TODO : update data base for transaction & tickets table 
-			
-			String result = "Add tickets for a user";
+		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
+			//TODO : add new user in database
+			String result = "Add a new User";
 			resp.setStatus(HttpServletResponse.SC_OK);
 			resp.setContentType("text/html");
 			resp.setCharacterEncoding("UTF-8");
@@ -50,12 +48,10 @@ public class UserEventTicketsAddServlet extends HttpServlet {
 			resp.getWriter().println(result);
 			resp.getWriter().flush();
 			
-			System.out.println("good good request");
-			
 		} else {
 			System.out.println("bad bad request");
 		}
-	
+		
 	}
 
 }

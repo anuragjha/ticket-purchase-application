@@ -1,7 +1,7 @@
 /**
  * 
  */
-package webService;
+package httpUtil;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -16,16 +16,18 @@ import java.util.Map;
  * @author anuragjha
  *
  */
-public class HTTPConnect {
+public class HttpConnection {
 
 	//private URL url;
 	private HttpURLConnection conn;
 
+	
+	
 
 	/**
 	 * 
 	 */
-	public HTTPConnect(String urlString) {
+	public HttpConnection(String urlString) {
 
 		try {
 			URL url = new URL(urlString);
@@ -124,7 +126,7 @@ public class HTTPConnect {
 	public static void main(String[] args) {
 
 		String myUrl = "http://localhost:7071/list";
-		HTTPConnect http = new HTTPConnect(myUrl);
+		HttpConnection http = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");

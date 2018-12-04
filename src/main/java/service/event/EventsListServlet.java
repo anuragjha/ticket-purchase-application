@@ -1,15 +1,21 @@
 /**
  * 
  */
-package eventService;
+package service.event;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.Response;
+
+import com.google.gson.Gson;
+
+import model.DatabaseManager;
+import model.objects.Event;
+import model.objects.EventList;
 
 /**
  * @author anuragjha
@@ -38,10 +44,14 @@ public class EventsListServlet extends HttpServlet {
 		}
 		
 		if((subPaths.length == 2) && (subPaths[1].equals("list"))) {
-			//TODO : query database to get list of all events
-			String result = "List of all Events";
+			//TODO : query database to get list of all events 
+			
+			String result = this.getResults();
+			//String result = "List of all Events";
+			
 			resp.setStatus(HttpServletResponse.SC_OK);
-			resp.setContentType("text/html");
+			//resp.setContentType("text/html");
+			resp.setContentType("application/json");
 			resp.setCharacterEncoding("UTF-8");
 			resp.setContentLength(result.length());
 			
@@ -50,7 +60,30 @@ public class EventsListServlet extends HttpServlet {
 			
 		} else {
 			System.out.println("bad bad request");
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}
 	}
+	
+	
+	private String getResults() {
+		DatabaseManager dbm1 = new DatabaseManager();
+		System.out.println("Connected to database");
+		
+		ResultSet result = dbm1.eventsTableGetEventList();  //get event list
+		EventList eventList = new EventList(result);
+		dbm1.close();
+		
+		Gson gson = new Gson();
+		String resultJson = gson.toJson(eventList, EventList.class);
+		System.out.println("result:::::: " + resultJson);
+		
+		return resultJson;
+	}
+	
+	
+	public static void main(String[] args) {
+		//EventsListServlet.getResults();
+	}
+	
 
 }
