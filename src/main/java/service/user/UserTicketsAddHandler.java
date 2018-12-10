@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 
 import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
+import httpUtil.HttpRespUtil;
 import model.DatabaseManager;
 import model.objects.AppParams;
 import model.objects.Event;
@@ -25,13 +26,6 @@ import model.objects.UserId;
  *
  */
 public class UserTicketsAddHandler {
-
-	/**
-	 * 
-	 */
-	public UserTicketsAddHandler() {
-		// TODO Auto-generated constructor stub
-	}
 
 
 	protected synchronized void handle(HttpServletRequest req, HttpServletResponse resp)
@@ -52,38 +46,34 @@ public class UserTicketsAddHandler {
 
 		if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) && 
 				(subPaths[2].equals("tickets")) && (subPaths[3].equals("add")) ) {
-			//TODO : update data base for transaction & tickets table 
+			
 			AppParams appParams = new HttpReqUtil().reqParamsFromJsonBody(req);
-			//result = "Add tickets for a user";
 
 			if((Integer.parseInt(subPaths[1]) > 0) && (appParams.getEventid() > 0) &&
 					(appParams.getTickets() > 0)) {
 
 				isSuccess = getResult((Integer.parseInt(subPaths[1])), appParams.getEventid(),
-						appParams.getTickets());  ///method here 
-
+						appParams.getTickets());
 			} 
 		}
-		
+
+		result = this.setResponse(resp, isSuccess);
+
+		new HttpRespUtil().writeResponse(resp, result); 
+
+	}
+
+
+	private String setResponse(HttpServletResponse resp, boolean isSuccess) {
 		if(isSuccess) {
-			ResultOK ro = new ResultOK("Event tickets added");
-			result = new Gson().toJson(ro, ResultOK.class); 
 			resp.setStatus(HttpServletResponse.SC_OK);
-			System.out.println("good good request");
+			ResultOK ro = new ResultOK("Event tickets added");
+			return new Gson().toJson(ro, ResultOK.class); 
 		} else {
-			ResultEmpty re = new ResultEmpty("Tickets could not be added");
-			result = new Gson().toJson(re, ResultEmpty.class); 
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			System.out.println("bad bad request");
+			ResultEmpty re = new ResultEmpty("Tickets could not be added"); 
+			return new Gson().toJson(re, ResultEmpty.class);
 		}
-
-		resp.setContentType("application/json");
-		resp.setCharacterEncoding("UTF-8");
-		resp.setContentLength(result.length());
-
-		resp.getWriter().println(result);
-		resp.getWriter().flush();
-
 	}
 
 
@@ -114,8 +104,8 @@ public class UserTicketsAddHandler {
 
 		dbm1.close();
 
-		System.out.println("reyturn of getResult:::::: " + /*resultJson*/ ticketDone);
-		
+		System.out.println("return of getResult : " + ticketDone);
+
 		return correct;
 	}
 

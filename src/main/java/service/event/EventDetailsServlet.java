@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import httpUtil.HttpRespUtil;
 import model.DatabaseManager;
 import model.objects.Event;
 import model.objects.ResultEmpty;
@@ -23,12 +24,6 @@ import model.objects.ResultEmpty;
  */
 public class EventDetailsServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
-	public EventDetailsServlet() {
-		// TODO Auto-generated constructor stub
-	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -49,27 +44,12 @@ public class EventDetailsServlet extends HttpServlet {
 		if((subPaths.length == 2) && (subPaths[1].matches("[0-9]+")) && 
 				(Integer.parseInt(subPaths[1]) > 0)) {
 			System.out.println("good good -> in get /{eventid}/: /"+subPaths[1]); 
-			//TODO : query data base to get details of event
-			//String result = "Details of an Event";
+
 			Event event = this.getResult(Integer.parseInt(subPaths[1]));
 			
-			if((event.getEventid() != 0)) {
-				result = new Gson().toJson(event, Event.class);				
-				resp.setStatus(HttpServletResponse.SC_OK);
-
-			} else {
-				ResultEmpty errorJson = new ResultEmpty("Event not found");
-				result = new Gson().toJson(errorJson, ResultEmpty.class);
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-			}
+			result = this.setResponse(resp, event);
 			
-			resp.setContentType("application/json");
-			resp.setCharacterEncoding("UTF-8");
-			resp.setContentLength(result.length());
-			
-			resp.getWriter().println(result);
-			resp.getWriter().flush();
+			new HttpRespUtil().writeResponse(resp, result); 
 
 		} else {
 			System.out.println("bad bad -> in get /{eventid}/"); 
@@ -79,6 +59,23 @@ public class EventDetailsServlet extends HttpServlet {
 
 	
 	
+	private String setResponse(HttpServletResponse resp, Event event) {
+		if((event.getEventid() != 0)) {
+						
+			resp.setStatus(HttpServletResponse.SC_OK);
+			return new Gson().toJson(event, Event.class);	
+
+		} else {
+			ResultEmpty errorJson = new ResultEmpty("Event not found");
+			
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new Gson().toJson(errorJson, ResultEmpty.class);
+
+		}
+	}
+
+
+
 	private Event getResult(int eventid) {
 
 		String resultJson  = "";

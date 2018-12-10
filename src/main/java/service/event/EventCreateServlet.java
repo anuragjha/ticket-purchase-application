@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import cs601.project4.AppConstants;
 import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
+import httpUtil.HttpRespUtil;
 import model.DatabaseManager;
 import model.objects.AppParams;
 import model.objects.EventId;
@@ -25,35 +27,19 @@ import model.objects.ResultEmpty;
  */
 public class EventCreateServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
-	public EventCreateServlet() {
-		// TODO Auto-generated constructor stub
-	}
-
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
 		String result = "";
 
-		System.out.println("in doPost of EventCreateServlet");
-		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
-		//System.out.println("req body to EvenCreateServlet: " + new Proj4HTTPReader().httpBody(req));
-
 		String[] subPaths = req.getRequestURI().split("/");
-		System.out.println("length: " + subPaths.length);
-		for(String path : subPaths) {
-			System.out.println("subpaths: " + path);
-		}
 
 		int eventid = 0;
 		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
 
-			AppParams appParams = new HttpReqUtil().reqParamsFromJsonBody(req);////////  !!!!!!!! ///
+			AppParams appParams = new HttpReqUtil().reqParamsFromJsonBody(req);
 
-			//TODO : add a event in database
 			if((!appParams.getEventname().equals("")) && (appParams.getNumtickets() > 0) && 
 					(appParams.getUserid() > 0)) {
 
@@ -64,33 +50,34 @@ public class EventCreateServlet extends HttpServlet {
 			} 
 
 		}
+		
+		result = this.setResponse(resp, eventid);
+		
+		new HttpRespUtil().writeResponse(resp, result); 
 
+	}
+	
+	
+	private String setResponse(HttpServletResponse resp, int eventid) {
 		if(eventid!=0) {
 			resp.setStatus(HttpServletResponse.SC_OK);
 			EventId eventId = new EventId(eventid);
-			result = new Gson().toJson(eventId, EventId.class);
+			return new Gson().toJson(eventId, EventId.class);
+
 		} else {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			//result = new ResultEmpty("Event unsuccessfully created");
 			ResultEmpty errorJson = new ResultEmpty("Event unsuccessfully created");
-			result = new Gson().toJson(errorJson, ResultEmpty.class);
+			return new Gson().toJson(errorJson, ResultEmpty.class);
 		}
-
-		resp.setContentType("application/json");
-		resp.setCharacterEncoding("UTF-8");
-		resp.setContentLength(result.length());
-
-		resp.getWriter().println(result);
-		resp.getWriter().flush();
-
+		
 	}
 
 
 
 	private int getResult(String eventname, int userid, int numtickets, int avail, int purchased) {
 
-		boolean isSuccess = false;
-		String resultJson = "";
+//		boolean isSuccess = false;
+//		String resultJson = "";
 
 		DatabaseManager dbm1 = new DatabaseManager();
 		System.out.println("Connected to database");
@@ -109,7 +96,8 @@ public class EventCreateServlet extends HttpServlet {
 
 	private boolean checkifUserExists(int userid) {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/"+userid);
+//		httpCon = new HttpConnection("http://localhost:7072/"+userid);
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathUserService()+"/"+userid);
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");

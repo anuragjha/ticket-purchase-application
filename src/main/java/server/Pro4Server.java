@@ -12,14 +12,12 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 /**
  * @author anuragjha
- *
+ * Pro4Server implements the Jetty Server 
  */
 public class Pro4Server {
 
 	private Server jettyServer;
-
-	private boolean shouldRun;
-
+	
 	private ServletHandler handler;
 
 	private final int PORT;
@@ -41,9 +39,13 @@ public class Pro4Server {
 		return jettyServer;
 	}
 	
+	/**
+	 * Initialises the Jetty server
+	 * @param minThreads
+	 * @param maxThreads
+	 * @param timeout
+	 */
 	public void initialize(int minThreads, int maxThreads, int timeout) {
-
-		this.shouldRun = true;
 
 		QueuedThreadPool threadpool = getThreadpool(minThreads, maxThreads, timeout);
 
@@ -60,10 +62,22 @@ public class Pro4Server {
 	}
 
 
+	/**
+	 * creates a Queued Thread Pool for Jetty to use
+	 * @param minThreads
+	 * @param maxThreads
+	 * @param idleTimeout
+	 * @return
+	 */
 	private QueuedThreadPool getThreadpool(int minThreads, int maxThreads, int idleTimeout) {
 		return new QueuedThreadPool(minThreads, maxThreads, idleTimeout);
 	}
 
+	/**
+	 * adds mapping to the server handler
+	 * @param clazz
+	 * @param path
+	 */
 	public void addMapping(Class clazz, String path) {
 		//only HttpServlet sub class can be mapped
 		if(clazz.getGenericSuperclass().toString().endsWith(".HttpServlet")) {
@@ -74,6 +88,9 @@ public class Pro4Server {
 	}
 	
 
+	/**
+	 * starts the Jetty server
+	 */
 	public void start() {
 		try {
 			this.jettyServer.start();  //
@@ -88,12 +105,12 @@ public class Pro4Server {
 	}
 
 
-	public static void main(String[] args) {
-
-//		Pro4Server ps = new Pro4Server(7070);
-//		ps.initialize(10, 100, 120);
-//		//ps.addMapping(BlockingServlet.class, "/status");
-//		ps.start();
-	}
+//	public static void main(String[] args) {
+//
+////		Pro4Server ps = new Pro4Server(7070);
+////		ps.initialize(10, 100, 120);
+////		//ps.addMapping(BlockingServlet.class, "/status");
+////		ps.start();
+//	}
 
 }

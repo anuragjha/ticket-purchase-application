@@ -18,7 +18,6 @@ import java.util.Map;
  */
 public class HttpConnection {
 
-	//private URL url;
 	private HttpURLConnection conn;
 
 	
@@ -111,9 +110,9 @@ public class HttpConnection {
 	}
 
 	
-	public void writeResquestBody(String reqBody) {
+	public void writeRequestBody(String reqBody) {
 		try {
-			conn.getOutputStream().write(reqBody.getBytes());
+			conn.getOutputStream().write(reqBody.getBytes("UTF-8"));
 			conn.getOutputStream().flush();
 		} catch (IOException e) {
 			System.out.println("Error in writing to Con Output Stream");
@@ -172,24 +171,44 @@ public class HttpConnection {
 	}
 
 
-
-	public static void main(String[] args) {
-
-		String myUrl = "http://localhost:7071/list";
-		HttpConnection http;
-		http = new HttpConnection(myUrl);
+	public void connectPostRequest() {
+		this.setRequestMethod("POST");
+		this.setDoOutput(true);
 		
+		this.setRequestProperty("Accept-Charset", "UTF-8");
+		this.setRequestProperty("Content-Type", "application/json");
+
+		this.connect();
 		
-		http.setRequestMethod("GET");
-		http.setRequestProperty("Accept-Charset", "UTF-8");
-		http.connect();
-
-		http.readResponseHeader();
-		http.readResponseBody();
-		
-
-
 	}
+	
+	public void connectGetRequest() {		
+		this.setRequestMethod("GET");
+		this.setRequestProperty("Accept-Charset", "UTF-8");
+		this.setRequestProperty("Content-Type", "application/json");
+		this.connect();
+		
+	}
+
+
+
+//	public static void main(String[] args) {
+//
+//		String myUrl = "http://localhost:7071/list";
+//		HttpConnection http;
+//		http = new HttpConnection(myUrl);
+//		
+//		
+//		http.setRequestMethod("GET");
+//		http.setRequestProperty("Accept-Charset", "UTF-8");
+//		http.connect();
+//
+//		http.readResponseHeader();
+//		http.readResponseBody();
+//		
+//
+//
+//	}
 
 
 }

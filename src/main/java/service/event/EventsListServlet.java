@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import httpUtil.HttpRespUtil;
 import model.DatabaseManager;
 import model.objects.Event;
 import model.objects.EventList;
@@ -37,29 +38,17 @@ public class EventsListServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		System.out.println("in doGet of EventsListServlet");
-		
 		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
 
 		String[] subPaths = req.getRequestURI().split("/");
-		System.out.println("length: " + subPaths.length);
-		for(String path : subPaths) {
-			System.out.println("subpaths: " + path);
-		}
 		
 		if((subPaths.length == 2) && (subPaths[1].equals("list"))) {
-			//TODO : query database to get list of all events 
 			
 			String result = this.getResults();
-			//String result = "List of all Events";
 			
 			resp.setStatus(HttpServletResponse.SC_OK);
-			//resp.setContentType("text/html");
-			resp.setContentType("application/json");
-			resp.setCharacterEncoding("UTF-8");
-			resp.setContentLength(result.length());
 			
-			resp.getWriter().println(result);
-			resp.getWriter().flush();
+			new HttpRespUtil().writeResponse(resp, result); 
 			
 		} else {
 			System.out.println("bad bad request");
@@ -78,22 +67,12 @@ public class EventsListServlet extends HttpServlet {
 		
 		///https://google.github.io/gson/apidocs/com/google/gson/reflect/TypeToken.html
 		Type type = new TypeToken<ArrayList<Event>>() {}.getType();
-		Gson gson = new Gson();
-		String resultJson = gson.toJson(eventList.getEventList(), type);
-		System.out.println("result:::::: " + resultJson);
-		///
-//		Gson gson = new Gson();
-//		String resultJson = gson.toJson(eventList, EventList.class);
-//		System.out.println("result:::::: " + resultJson);
-		
+		String resultJson = new Gson().toJson(eventList.getEventList(), type);
+		System.out.println("result : " + resultJson);
 		
 		return resultJson;
 	}
 	
-	
-	public static void main(String[] args) {
-		//EventsListServlet.getResults();
-	}
 	
 
 }

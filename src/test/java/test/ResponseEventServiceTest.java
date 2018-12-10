@@ -94,7 +94,7 @@ public class ResponseEventServiceTest {
 		httpCon.connect();
 
 		String reqBody = "{ \"userid\": 1, \"eventname\": \"EventService111\", \"numtickets\": 99 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -121,7 +121,7 @@ public class ResponseEventServiceTest {
 
 
 		String reqBody = "{ \"usesrid\": 7, \"eventname\": \"qwerty123\", \"numtickets\": 99 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -144,7 +144,7 @@ public class ResponseEventServiceTest {
 		httpCon.connect();
 
 		String reqBody = "{ \"userid\": , \"eventname\": \"qwerty123\", \"numtickets\": 99 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -170,7 +170,7 @@ public class ResponseEventServiceTest {
 
 		//String reqBody = "{ \"userid\": 2, \"eventid\": 2, \"tickets\": 6 }";
 		String reqBody = "{ \"userid\": 1, \"eventid\": 60, \"tickets\": 1 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -196,7 +196,7 @@ public class ResponseEventServiceTest {
 
 		//String reqBody = "{ \"userid\": 2, \"eventid\": 2, \"tickets\": 6 }";
 		String reqBody = "{ \"userid\": 1, \"eventid\": 60, \"tickets\": 15 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -220,7 +220,7 @@ public class ResponseEventServiceTest {
 
 		//String reqBody = "{ \"userid\": 2, \"eventid\": 2, \"tickets\": 6 }";
 		String reqBody = "{ \"userid\": 7, \"eventid\": 661, \"tickets\": 15 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -244,7 +244,7 @@ public class ResponseEventServiceTest {
 
 		//String reqBody = "{ \"userid\": 2, \"eventid\": 2, \"tickets\": 6 }";
 		String reqBody = "{ \"userid\": 7, \"eventid\": 61, \"tickets\": 155 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);

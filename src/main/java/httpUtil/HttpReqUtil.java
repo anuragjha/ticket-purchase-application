@@ -77,6 +77,12 @@ public class HttpReqUtil {
 	public String[] reqSubPaths(HttpServletRequest req) {
 		return req.getPathInfo().split("/");
 	}
+	
+	
+	public void sendGetReq() {
+		
+	}
+	
 
 
 

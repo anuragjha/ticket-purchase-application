@@ -56,7 +56,7 @@ public class ResponseWebServiceTest {
 
 
 		String reqBody = "{ \"userid\": 1, \"eventname\": \"qwerty12\", \"numtickets\": 99 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -82,7 +82,7 @@ public class ResponseWebServiceTest {
 
 
 		String reqBody = "{ \"userid\": 1, \"eventnAAAAame\": \"qwerty12\", \"numtickets\": 99 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -138,7 +138,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void getEventPurchaseTest() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/events/60/purchase/2");
+		httpCon = new HttpConnection("http://localhost:7070/events/63/purchase/2");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -147,11 +147,9 @@ public class ResponseWebServiceTest {
 
 		httpCon.connect();
 
-
-
 		//String reqBody = "{ \"userid\": 2, \"eventid\": 2, \"tickets\": 6 }";
 		String reqBody = "{\"tickets\": 6}";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -178,7 +176,7 @@ public class ResponseWebServiceTest {
 
 		//String reqBody = "{ \"userid\": 2, \"eventid\": 2, \"tickets\": 6 }";
 		String reqBody = "{\"ticketsss\": 6}";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -204,8 +202,8 @@ public class ResponseWebServiceTest {
 
 
 
-		String reqBody = "{ \"username\": \"Superman1111\" }";
-		httpCon.writeResquestBody(reqBody);
+		String reqBody = "{ \"username\": \"Supermsdan1111\" }";
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -231,7 +229,7 @@ public class ResponseWebServiceTest {
 
 
 		String reqBody = "{ \"usesrname\": \"asd\" }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -256,7 +254,7 @@ public class ResponseWebServiceTest {
 
 
 		String reqBody = "{ \"username\": \"\" }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -341,7 +339,7 @@ public class ResponseWebServiceTest {
 		httpCon.connect();
 
 		String reqBody = "{ \"eventid\": 60, \"tickets\": 1, \"targetuser\": 6 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -366,7 +364,7 @@ public class ResponseWebServiceTest {
 		httpCon.connect();
 
 		String reqBody = "{ \"eventid\": 62, \"tickets\": 2, \"targetuser\": 99 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -389,7 +387,7 @@ public class ResponseWebServiceTest {
 		httpCon.connect();
 
 		String reqBody = "{ \"eventid\": 633, \"tickets\": 2, \"targetuser\": 1 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
@@ -412,7 +410,7 @@ public class ResponseWebServiceTest {
 		httpCon.connect();
 
 		String reqBody = "{ \"eventid\": 62, \"tickets\": 2, \"targetuser\": 1 }";
-		httpCon.writeResquestBody(reqBody);
+		httpCon.writeRequestBody(reqBody);
 
 
 		String respStatus = httpCon.readResponseHeader().get(null).get(0);
