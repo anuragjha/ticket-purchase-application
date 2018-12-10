@@ -9,7 +9,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import cs601.project4.BlockingServlet;
+import xsample.BlockingServlet;
 
 
 /**

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cs601.project4;
+package xsample;
 
 import java.io.IOException;
 

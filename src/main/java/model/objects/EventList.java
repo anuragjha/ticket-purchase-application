@@ -15,6 +15,12 @@ public class EventList {
 
 	private ArrayList<Event> eventList;
 	
+	
+	public EventList() {
+		
+	}
+	
+	
 	/**
 	 * 
 	 */

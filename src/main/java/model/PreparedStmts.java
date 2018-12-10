@@ -23,9 +23,13 @@ public class PreparedStmts {
 	private PreparedStatement eventsTableUpdateForTickets;
 	private PreparedStatement ticketsTableUpdateForTickets;
 	private PreparedStatement userTableAddEntry;
+	private PreparedStatement userTableGetEntry;
+	private PreparedStatement userTableIfUsernameExist;
 	private PreparedStatement userTableGetUserDetails;
 	private PreparedStatement ticketsTableGetEventidForUser;
 	private PreparedStatement ticketsTableAddEntry;
+	private PreparedStatement ticketsTableGetNoOfTickets;	
+	private PreparedStatement ticketsTableDeleteNoOfTickets;
 	private PreparedStatement sqlLastInsertID;
 	/**
 	 * 
@@ -122,6 +126,17 @@ public class PreparedStmts {
 		return userTableAddEntry;
 	}
 
+	
+	
+	public PreparedStatement getUserTableIfUsernameExist() {
+		
+		return userTableIfUsernameExist;
+	}
+	
+	public PreparedStatement getUserTableGetEntry() {
+		
+		return userTableGetEntry;
+	}
 
 	/**
 	 * userTableGetUserDetails : gets a ROW in the user table for a userid
@@ -143,6 +158,7 @@ public class PreparedStmts {
 	 * @return the PreparedStatement ticketsTableGetEventidForUser
 	 */
 	public PreparedStatement getTicketsTableGetEventidForUser() {
+		System.out.println("in PreparedStmt - getTicketsTableGetEventidForUser");
 		return ticketsTableGetEventidForUser;
 	}
 
@@ -157,6 +173,16 @@ public class PreparedStmts {
 	 */
 	public PreparedStatement getTicketsTableAddEntry() {
 		return ticketsTableAddEntry;
+	}
+	
+	public PreparedStatement getTicketsTableGetNoOfTickets() {
+		
+		return ticketsTableGetNoOfTickets;
+	}
+	
+	public PreparedStatement getTicketsTableDeleteNoOfTickets() {
+
+		return ticketsTableDeleteNoOfTickets;
 	}
 	
 	public PreparedStatement getLastInsertID() {
@@ -179,9 +205,13 @@ public class PreparedStmts {
 			this.ticketsTableAddEntry();
 			this.ticketsTableUpdateForTickets(); //used in 1 case of transfer
 			this.ticketsTableGetEventidForUser();
-
+			this.ticketsTableGetNoOfTickets();
+			this.ticketsTableDeleteNoOfTickets();
+			
 			this.userTableAddEntry();
-			this.userTableGetUserDetails();
+			this.userTableGetEntry();
+			this.userTableIfUsernameExist();
+			//this.userTableGetUserDetails();
 			
 			this.transactionsTableAddEntry();
 			
@@ -193,7 +223,7 @@ public class PreparedStmts {
 		
 	}
 
-	
+
 	/*
 	Event Service ->
 	
@@ -331,6 +361,39 @@ public class PreparedStmts {
 	}
 	
 	
+	private void userTableIfUsernameExist() throws SQLException {
+		String stmt = "select userid from users where username= ?";
+		userTableIfUsernameExist = con.prepareStatement(stmt);
+
+	}
+	
+
+	private void ticketsTableGetNoOfTickets() throws SQLException {
+		String stmt = "select count(*) from tickets where userid = ? and eventid = ?";
+		ticketsTableGetNoOfTickets = con.prepareStatement(stmt);
+		
+	}
+	
+	
+	private void ticketsTableDeleteNoOfTickets() throws SQLException {
+		String stmt = "delete from tickets where userid = ? and eventid = ? limit ?;";
+		ticketsTableDeleteNoOfTickets = con.prepareStatement(stmt);
+		
+	}
+	
+	/**
+	 * userTableGetEntry : gets a username in the user table for a userid
+	 * @param userid
+	 * @throws SQLException
+	 */
+	private void userTableGetEntry() throws SQLException {
+		String stmt = "select username from users"
+				+ " where userid = ?";
+		userTableGetEntry = con.prepareStatement(stmt);
+		
+	}
+	
+	
 	/*
 	> GET /{userid}
 	## 
@@ -339,16 +402,9 @@ public class PreparedStmts {
 	right join on
 	(Select * from tickets where userID = userid);
 	*/
-	/**
-	 * userTableGetUserDetails : gets a ROW in the user table for a userid
-	 * @param userid
-	 * @throws SQLException
-	 */
-	private void userTableGetUserDetails() throws SQLException {
-		String stmt = "select userid, username from users"
-				+ " where userid = ?";
-		userTableGetUserDetails = con.prepareStatement(stmt);
-	}
+//	private void userTableGetUserDetails() throws SQLException {
+//
+//	}
 	
 	/**
 	 * ticketsTableGetEventidForUser : gets a ROW in the tickets table for a userid
@@ -360,6 +416,18 @@ public class PreparedStmts {
 				+ " where userid = ?";
 		ticketsTableGetEventidForUser = con.prepareStatement(stmt);
 	}
+	
+	
+	/**
+	 * ticketsTableGetEventidForUser : gets a ROW in the tickets table for a userid
+	 * @param userid
+	 * @throws SQLException
+	 */
+//	private void userTableGetEventidForUser() throws SQLException {
+//		String stmt = "select userid, eventid from tickets"
+//				+ " where userid = ?";
+//		ticketsTableGetEventidForUser = con.prepareStatement(stmt);
+//	}
 	
 	
 	/*
@@ -377,11 +445,12 @@ public class PreparedStmts {
 	 * @throws SQLException
 	 */
 	private void ticketsTableAddEntry() throws SQLException {
-		String stmt = "insert into tickets(eventid, userid, numtickets) "
-				+ "values(?, ?, ?)";
+		String stmt = "insert into tickets(eventid, userid) "
+				+ "values(?, ?)";
 		ticketsTableAddEntry = con.prepareStatement(stmt);
 		
 	}
+	
 	
 	
 	private void lastInsertID() throws SQLException {
@@ -450,5 +519,8 @@ public class PreparedStmts {
 		// TODO Auto-generated method stub
 
 	}
+
+
+
 
 }

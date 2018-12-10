@@ -4,7 +4,9 @@
 package service.event;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import model.DatabaseManager;
 import model.objects.Event;
@@ -73,9 +76,16 @@ public class EventsListServlet extends HttpServlet {
 		EventList eventList = new EventList(result);
 		dbm1.close();
 		
+		///https://google.github.io/gson/apidocs/com/google/gson/reflect/TypeToken.html
+		Type type = new TypeToken<ArrayList<Event>>() {}.getType();
 		Gson gson = new Gson();
-		String resultJson = gson.toJson(eventList, EventList.class);
+		String resultJson = gson.toJson(eventList.getEventList(), type);
 		System.out.println("result:::::: " + resultJson);
+		///
+//		Gson gson = new Gson();
+//		String resultJson = gson.toJson(eventList, EventList.class);
+//		System.out.println("result:::::: " + resultJson);
+		
 		
 		return resultJson;
 	}

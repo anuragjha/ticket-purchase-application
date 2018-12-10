@@ -25,6 +25,7 @@ public class HttpConnection {
 	
 
 	/**
+	 * @throws IOException 
 	 * 
 	 */
 	public HttpConnection(String urlString) {
@@ -38,7 +39,7 @@ public class HttpConnection {
 			System.out.println("URL not in correct format");
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("Unable to create connection");
+			System.out.println("URL IO error");
 			e.printStackTrace();
 		}
 
@@ -88,6 +89,17 @@ public class HttpConnection {
 	}
 
 
+	public int readResponseCode() {
+		int code = 0;
+		try {
+			code = this.conn.getResponseCode();
+		} catch (IOException e) {
+			System.out.println("Error in getting response code");
+			e.printStackTrace();
+		}
+		return code;
+	}
+	
 	public Map<String, List<String>> readResponseHeader() {
 		Map<String, List<String>> headers = this.conn.getHeaderFields();
 
@@ -98,6 +110,17 @@ public class HttpConnection {
 		return headers;
 	}
 
+	
+	public void writeResquestBody(String reqBody) {
+		try {
+			conn.getOutputStream().write(reqBody.getBytes());
+			conn.getOutputStream().flush();
+		} catch (IOException e) {
+			System.out.println("Error in writing to Con Output Stream");
+			e.printStackTrace();
+		}
+	}
+	
 
 	public String readResponseBody() {
 		String respBody = "";
@@ -116,6 +139,32 @@ public class HttpConnection {
 
 			}catch(IOException ioe) {
 				System.out.println("Error in getting input stream");
+				ioe.printStackTrace();
+			}
+		}
+		return respBody;
+
+	}
+	
+	
+	public String readErrorResponseBody() {
+		String respBody = "";
+		if(this.conn.getContentLength() > 0) {
+			byte[] bytes = new byte[this.conn.getContentLength()];
+			int read = 0;
+			try {
+				while(read < this.conn.getContentLength()) {
+					read += this.conn.getErrorStream().read(bytes, read, (bytes.length-read));
+				}
+
+				System.out.println("Bytes expected: " + bytes.length + " Bytes read: " + read);
+
+				respBody = new String(bytes, StandardCharsets.UTF_8);
+				System.out.println("Request Body: " + respBody);
+
+			}catch(IOException ioe) {
+				System.out.println("Error in getting input stream");
+				ioe.printStackTrace();
 			}
 		}
 		return respBody;
@@ -123,17 +172,21 @@ public class HttpConnection {
 	}
 
 
+
 	public static void main(String[] args) {
 
 		String myUrl = "http://localhost:7071/list";
-		HttpConnection http = new HttpConnection(myUrl);
-		//http.fetch(myUrl);
+		HttpConnection http;
+		http = new HttpConnection(myUrl);
+		
+		
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");
 		http.connect();
 
 		http.readResponseHeader();
 		http.readResponseBody();
+		
 
 
 	}

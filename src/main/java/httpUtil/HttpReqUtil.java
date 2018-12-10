@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.Gson;
 
-import cs601.project4.AppParams;
+import model.objects.AppParams;
 
 /**
  * @author anuragjha

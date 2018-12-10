@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import cs601.project4.AppParams;
 import httpUtil.HttpReqUtil;
 import model.DatabaseManager;
+import model.objects.AppParams;
 import model.objects.EventId;
 import model.objects.ResultEmpty;
 import model.objects.UserId;
@@ -37,6 +37,7 @@ public class UserCreateServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		String result = "";
+		int userid = 0;
 
 		System.out.println("in doPost of UserCreateServlet");
 		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
@@ -53,21 +54,39 @@ public class UserCreateServlet extends HttpServlet {
 
 			//TODO : add new user in database
 			//result = "Add a new User";
-			if(appParams!= null) {
+			if(appParams.getUsername()!= null && (appParams.getUsername().length() > 0)) {
+				////
+				userid = this.getResult(appParams.getUsername());       //////  //method !!!!!!
+				////
+				//				if(result.contains("User unsuccessfully created")) {
+				//					resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				//					
+				//					System.out.println(" 1 bad bad request");
+				//				} else {
+				//					resp.setStatus(HttpServletResponse.SC_OK);	
+				//
+				//				}
+			} 
+			//			else {
+			//				ResultEmpty re = new ResultEmpty("User unsuccessfully created");
+			//				result = new Gson().toJson(re, ResultEmpty.class);
+			//				System.out.println(" 2 bad bad request");
+			//				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			//			}
+		}
 
-				result = this.getResult(appParams.getUsername()); //method !!!!!!
 
-				if(result.contains("User unsuccessfully created")) {
-					resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					System.out.println(" 1 bad bad request");
-				} else {
-					resp.setStatus(HttpServletResponse.SC_OK);	
-
-				}
-			} else {
-				System.out.println(" 2 bad bad request");
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			}
+		if(userid!=0) {
+			UserId userId = new UserId(userid);
+			Gson gson = new Gson();
+			result = gson.toJson(userId, UserId.class);
+			resp.setStatus(HttpServletResponse.SC_OK);
+		} else {
+			//result = new ResultEmpty("User unsuccessfully created");
+			ResultEmpty errorJson = new ResultEmpty("User unsuccessfully created");
+			Gson gson = new Gson();
+			result = gson.toJson(errorJson, ResultEmpty.class);
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}
 
 		resp.setContentType("application/json");
@@ -82,30 +101,36 @@ public class UserCreateServlet extends HttpServlet {
 
 
 
-	public String getResult(String username) {
+	public int getResult(String username) {
 
-		String resultJson = "";
-
+		//String resultJson = "";
+		int userid = 0;
 		DatabaseManager dbm1 = new DatabaseManager();
 		System.out.println("Connected to database");
 
-		int userid = dbm1.userTableAddEntry(username);
-		dbm1.close();
 
-		if(userid!=0) {
-			UserId userId = new UserId(userid);
-			Gson gson = new Gson();
-			resultJson = gson.toJson(userId, UserId.class);
-		} else {
-			//result = new ResultEmpty("User unsuccessfully created");
-			ResultEmpty errorJson = new ResultEmpty("User unsuccessfully created");
-			Gson gson = new Gson();
-			resultJson = gson.toJson(errorJson, ResultEmpty.class);
+		if(dbm1.userTableIfUsernameExist(username) == 0) {
+			userid = dbm1.userTableAddEntry(username);
+			dbm1.close();
 		}
 
-		System.out.println("result:::::: " + /*resultJson*/ resultJson);
+		return userid;
 
-		return resultJson;
+
+		//		if(userid!=0) {
+		//			UserId userId = new UserId(userid);
+		//			Gson gson = new Gson();
+		//			resultJson = gson.toJson(userId, UserId.class);
+		//		} else {
+		//			//result = new ResultEmpty("User unsuccessfully created");
+		//			ResultEmpty errorJson = new ResultEmpty("User unsuccessfully created");
+		//			Gson gson = new Gson();
+		//			resultJson = gson.toJson(errorJson, ResultEmpty.class);
+		//		}
+		//
+		//		System.out.println("result:::::: " + /*resultJson*/ resultJson);
+		//
+		//		return resultJson;
 	}
 
 }

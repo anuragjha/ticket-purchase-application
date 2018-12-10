@@ -16,6 +16,7 @@ public class Ticket {
 	 */
 	public Ticket(int eventid) {
 		this.eventid = eventid;
+		System.out.println("Event tickets for User : " + this.eventid);
 	}
 	
 	/**

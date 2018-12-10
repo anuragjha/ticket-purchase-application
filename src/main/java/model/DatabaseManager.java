@@ -107,10 +107,17 @@ public class DatabaseManager {
 		return this.getUserTableAddEntry(username);
 	}
 
-
-	public ResultSet userTableGetUserDetails(int userid) {
-		return this.getUserTableGetUserDetails(userid);
+	public String userTableGetEntry(int userid) {
+		return this.getUserTableGetEntry(userid);
 	}
+
+	public int userTableIfUsernameExist(String username) {
+		return this.getUserTableIfUsernameExist(username);
+	}
+
+//	public String ticketsTableGetUserDetails(int userid) {
+//		return this.getTicketsTableGetUserDetails(userid);
+//	}
 
 	public ResultSet ticketsTableGetEventidForUser(int userid) {
 		return this.getTicketsTableGetEventidForUser(userid);
@@ -121,6 +128,14 @@ public class DatabaseManager {
 		return getTicketsTableAddEntry(eventid, userid, numtickets);
 	}
 
+	public int ticketsTableGetNoOfTickets(int userid, int eventid) {
+		return getTicketsTableGetNoOfTickets(userid, eventid);
+	}
+	
+	
+	public boolean ticketsTableDeleteNoOfTickets(int userid, int eventid, int tickets) {
+		return getTicketsTableDeleteNoOfTickets(userid, eventid, tickets);
+	}
 
 	///////////////////////TODO: dividing marker
 
@@ -331,17 +346,21 @@ public class DatabaseManager {
 		return userid;
 	}
 
+	
+	private String getUserTableGetEntry(int userid) {
+		String username = "";
 
-	private ResultSet getUserTableGetUserDetails(int userid) {
-
-		ResultSet result = null;
-
-		PreparedStatement sqlStmt = preparedStmts.getEventsTableGetEventDetails();
+		PreparedStatement sqlStmt = preparedStmts.getUserTableGetEntry();
 		try {
-
+			System.out.println("getUserTableGetEntry : userid : " + userid);
 			sqlStmt.setInt(1, userid);
 
-			result = sqlStmt.executeQuery();
+			ResultSet result = sqlStmt.executeQuery();
+			
+			if(result.next()) {
+				username = result.getString(1);
+				System.out.println("username : " + username);
+			}
 
 			//this.getCon().close();
 
@@ -350,14 +369,65 @@ public class DatabaseManager {
 			e.printStackTrace();
 		}
 
-		return result;
+		return username;
 	}
+	
+	
+	private int getUserTableIfUsernameExist(String username) {
+		int userid = 0;
+
+		PreparedStatement sqlStmt = preparedStmts.getUserTableIfUsernameExist();
+		try {
+			System.out.println("getUserTableIfUsernameExist : username : " + username);
+			sqlStmt.setString(1, username);
+
+			ResultSet result = sqlStmt.executeQuery();
+			
+			if(result.next()) {
+				userid = result.getInt(1);
+				System.out.println("user : " + userid);
+			}
+
+			//this.getCon().close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return userid;
+	}
+
+//	private String getTicketsTableGetUsername(int userid) {
+//
+//		String username = "";
+//		ResultSet result = null;
+//
+//		PreparedStatement sqlStmt = preparedStmts.
+//		try {
+//
+//			sqlStmt.setInt(1, userid);
+//
+//			result = sqlStmt.executeQuery();
+//			if(result.next()) {
+//				username = result.getString(1);
+//			}
+//
+//			//this.getCon().close();
+//
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		return username;
+//	}
 
 
 	private ResultSet getTicketsTableGetEventidForUser(int userid) {
 		ResultSet result = null;
 
-		PreparedStatement sqlStmt = preparedStmts.getEventsTableGetEventDetails();
+		PreparedStatement sqlStmt = preparedStmts.getTicketsTableGetEventidForUser();
 		try {
 
 			sqlStmt.setInt(1, userid);
@@ -367,7 +437,7 @@ public class DatabaseManager {
 			//this.getCon().close();
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Error in getTicketsTableGetEventidForUser - DataBaseManager");
 			e.printStackTrace();
 		}
 
@@ -384,7 +454,7 @@ public class DatabaseManager {
 		try {
 			sqlStmt.setInt(1, eventid);
 			sqlStmt.setInt(2, userid);
-			sqlStmt.setInt(3, numtickets);
+			//sqlStmt.setInt(3, numtickets);
 			
 			//boolean sqlStatus = sqlStmt.execute();
 			//TODO://retrieving value
@@ -407,6 +477,53 @@ public class DatabaseManager {
 		return ticketid;
 		
 	}
+	
+	
+	
+	private int getTicketsTableGetNoOfTickets(int userid, int eventid) {
+		int noOfTickets = 0;
+		PreparedStatement sqlStmt = preparedStmts.getTicketsTableGetNoOfTickets();
+		
+		try {
+			sqlStmt.setInt(1, userid);
+			sqlStmt.setInt(2, eventid);
+			
+			ResultSet result = sqlStmt.executeQuery();
+			if(result.next()) {
+				noOfTickets = result.getInt(1);
+			}
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+		
+		return noOfTickets;
+	}
+	
+
+	private boolean getTicketsTableDeleteNoOfTickets(int userid, int eventid, int tickets) {
+		boolean deleted = false;
+		PreparedStatement sqlStmt = preparedStmts.getTicketsTableDeleteNoOfTickets();
+		
+		try {
+			sqlStmt.setInt(1, userid);
+			sqlStmt.setInt(2, eventid);
+			sqlStmt.setInt(3, tickets);
+			
+			int result = sqlStmt.executeUpdate();
+			if(result > 0) {
+				deleted = true;
+			}
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+		
+		return deleted;
+	}
+
 
 
 
@@ -450,6 +567,15 @@ public class DatabaseManager {
 
 
 	}
+
+
+
+
+
+
+
+
+
 
 
 

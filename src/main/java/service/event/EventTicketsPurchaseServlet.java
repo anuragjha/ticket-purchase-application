@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import cs601.project4.AppParams;
+import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
 import model.DatabaseManager;
+import model.objects.AppParams;
 import model.objects.Event;
-import model.objects.EventId;
 import model.objects.ResultEmpty;
 import model.objects.ResultOK;
 
@@ -39,8 +39,8 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		dbm1 = new DatabaseManager();  // close it
-		dbm1.setAutoCommit(false);
-		
+
+		boolean isSuccess = false;
 		String result = "";
 
 		System.out.println("in doPost of EventTicketsPurchaseServlet");
@@ -52,28 +52,32 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 			System.out.println("subpaths: " + path);
 		}
 
-		if((subPaths.length == 3) && (subPaths[1].equals("purchase")) && (subPaths[2].matches("[0-9]+")) ) {
+		if((subPaths.length == 3) && (subPaths[1].equals("purchase")) &&
+				(subPaths[2].matches("[0-9]+")) && (Integer.parseInt(subPaths[2]) > 0)) {
 			//TODO : update data base for transaction & tickets table 
 			AppParams appParams = new HttpReqUtil().reqParamsFromJsonBody(req);
-	////////
-			result = this.doPurchase(appParams.getUserid(), appParams.getEventid(), 
-					appParams.getTickets());  /// /// method  !!!!!!!!
+			////////   ///// ///// /////
+			System.out.println("Events Ticket purchase servlet : "
+					+ "appParams.getUserid()" + appParams.getUserid());
 			
-			System.out.println("result : " + result);
-			
-			if(result.equals("{\"ok\":\"Event tickets purchased\"}")) {
-				resp.setStatus(HttpServletResponse.SC_OK);
-				dbm1.commit();
-			} else {
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				dbm1.rollback();
+			if(Integer.parseInt(subPaths[2]) == appParams.getEventid()) {
+				isSuccess = this.getResult(appParams.getUserid(), appParams.getEventid(), 
+						appParams.getTickets());  /// /// method  !!!!!!!!
 			}
 
-			System.out.println("good good request");
+		} 
 
+		if(isSuccess) {
+			resp.setStatus(HttpServletResponse.SC_OK);
+			ResultOK ro = new ResultOK("Event tickets purchased");
+			result = new Gson().toJson(ro, ResultOK.class);
+			System.out.println("good good request");
 		} else {
-			System.out.println("bad bad request");
+
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			ResultEmpty re = new ResultEmpty("Tickets could not be purchased");
+			result = new Gson().toJson(re, ResultEmpty.class);
+			System.out.println("bad bad request");
 		}
 
 
@@ -84,77 +88,96 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 		resp.getWriter().println(result);
 		resp.getWriter().flush();
 
-		
-		dbm1.setAutoCommit(true);
+
+
 		dbm1.close(); // closing dbm 
 	}
 
-	private String doPurchase(int userid, int eventid, int tickets) {
+	private boolean getResult(int userid, int eventid, int tickets) {
 
-		String resultJson = "";
-		/// create http request and read response //// /// // /
-
-
-
-		System.out.println("Connected to database");
-
-		boolean checkAndUpdateEventTable = this.checkAndUpdateEventTable(eventid, tickets);
-		//boolean useridExist = this.checkUserid(dbm1, userid);
-		if(checkAndUpdateEventTable) { //condition
-			int transactionAdded = dbm1.transactionsTableAddEntry(eventid, userid, tickets, 0, 0); // add status
-			int ticketid = dbm1.ticketsTableAddEntry(eventid, userid, tickets); //http request
-			System.out.println("transactionAdded : " + transactionAdded + "\tticketAdded" + ticketid);
-
-			if((transactionAdded!=0) && (ticketid!=0)) {  //condition
-				ResultOK succJson = new ResultOK("Event tickets purchased");
-				Gson gson = new Gson();
-				resultJson = gson.toJson(succJson, ResultOK.class);
-
+		if(this.checkAndUpdateEventTable(eventid, tickets)) {
+			if(this.addUserTickets(userid, eventid, tickets)) {
+				return true;
 			} else {
-				ResultEmpty errorJson = new ResultEmpty("Tickets could not be purchased");
-				Gson gson = new Gson();
-				resultJson = gson.toJson(errorJson, ResultEmpty.class);
+				//this.updateEventTable(eventid, tickets);
+				this.checkAndUpdateEventTable(eventid, -tickets);
+				return false;
 			}
-
-		} else {
-			ResultEmpty errorJson = new ResultEmpty("Tickets could not be purchased");
-			Gson gson = new Gson();
-			resultJson = gson.toJson(errorJson, ResultEmpty.class);
 		}
 
-
-
-
-		System.out.println("result:::::: " + /*resultJson*/ resultJson);
-
-		return resultJson;
-
+		return false;
 	}
+
+
+
+
+	//	private void updateEventTable(int eventid, int tickets) {
+	//		dbm1.eventsTableUpdateForTickets(event.getAvail() - tickets,
+	//				event.getPurchased() + tickets, eventid)
+	//		
+	//	}
 
 	private boolean checkAndUpdateEventTable(int eventid, int tickets) {
 
-		ResultSet result = dbm1.eventsTableGetEventDetails(eventid);  //get event list
+		ResultSet result = dbm1.eventsTableGetEventDetails(eventid);  //get event detail
 		Event event = new Event(result);
 
+		int tableUpdate = 0;
 
 		System.out.println("in checkAndUpdateEventTable method - EventTicketsPurchaseServlet :");
 		System.out.println(tickets+", " + eventid + ", " + event.getAvail() + ", "+ event.getEventid());
 		if((tickets > 0) && (eventid > 0) && 
 				(event.getEventid() == eventid) && (event.getAvail() >= tickets)) {
-			int tableUpdate = dbm1.eventsTableUpdateForTickets(event.getAvail() - tickets,
+
+			tableUpdate = dbm1.eventsTableUpdateForTickets(event.getAvail() - tickets,
 					event.getPurchased() + tickets, eventid);
-			
+
 			System.out.println("Table Update : " + tableUpdate);
-			if(tableUpdate > 0) {
-				return true;
-			}
 
+		} else if((tickets < 0) && (eventid > 0) && (event.getEventid() == eventid)) {
+			System.out.println("roll back to : " + (event.getAvail() - tickets) + " : " + (event.getPurchased() + tickets) + " : " + eventid);
+
+			tableUpdate =  dbm1.eventsTableUpdateForTickets((event.getAvail() - tickets),
+					(event.getPurchased() + tickets), eventid);
 		}
-		
+
+		if(tableUpdate > 0) {
+			return true;
+		}
 		return false;
-
-
 	}
+
+
+
+
+	private boolean addUserTickets(int userid, int eventid, int tickets) {
+
+		HttpConnection httpCon = null;
+		httpCon = new HttpConnection("http://localhost:7072/"+userid+"/tickets/add");
+
+		httpCon.setRequestMethod("POST");
+		httpCon.setRequestProperty("Content-Type", "application/json");
+		httpCon.setDoOutput(true);
+		try {
+			httpCon.getConn().connect();
+			httpCon.writeResquestBody(
+					"{ \"eventid\": "+eventid+", \"tickets\": "+tickets+" }");
+
+			String respStatus = httpCon.readResponseHeader().get(null).get(0);
+			System.out.println("EventsTicketsPurchase : addUserTickets : "
+					+ "respCode :" + httpCon.readResponseCode() +" : "+respStatus);
+			if(httpCon.readResponseCode() == 200) {
+				return true;
+
+			}
+		} catch (IOException e) {
+			System.out.println("Cannot connect to User Service");
+			return false;
+		}
+		return false;
+	}
+
+
 
 
 }

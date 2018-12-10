@@ -12,9 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import cs601.project4.AppParams;
+import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
 import model.DatabaseManager;
+import model.objects.AppParams;
 import model.objects.EventId;
 import model.objects.ResultEmpty;
 
@@ -47,38 +48,33 @@ public class EventCreateServlet extends HttpServlet {
 			System.out.println("subpaths: " + path);
 		}
 
+		int eventid = 0;
 		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
 
 			AppParams appParams = new HttpReqUtil().reqParamsFromJsonBody(req);////////  !!!!!!!! ///
 
 			//TODO : add a event in database
-			if(appParams != null) {
-				
-				result = this.getResult(appParams.getEventname(), appParams.getUserid(), 
+			if((appParams.getEventname() != null) && (appParams.getNumtickets() > 0) && 
+					(appParams.getUserid() > 0)) {
+
+
+				eventid = this.getResult(appParams.getEventname(), appParams.getUserid(), 
 						appParams.getNumtickets(), appParams.getNumtickets(), 0);
-				
-				if(result.contains("Event unsuccessfully created")) {
-					resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-				} else {
-					resp.setStatus(HttpServletResponse.SC_OK);	
-					//					resp.setContentType("application/json");
-					//					resp.setCharacterEncoding("UTF-8");
-					//					resp.setContentLength(result.length());
+			} 
 
-				}
-
-			} else {
-				System.out.println("bad bad request");
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-			}
-		} else {
-			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}
 
-
-
+		if(eventid!=0) {
+			resp.setStatus(HttpServletResponse.SC_OK);
+			EventId eventId = new EventId(eventid);
+			result = new Gson().toJson(eventId, EventId.class);
+		} else {
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			//result = new ResultEmpty("Event unsuccessfully created");
+			ResultEmpty errorJson = new ResultEmpty("Event unsuccessfully created");
+			result = new Gson().toJson(errorJson, ResultEmpty.class);
+		}
 
 		resp.setContentType("application/json");
 		resp.setCharacterEncoding("UTF-8");
@@ -90,32 +86,46 @@ public class EventCreateServlet extends HttpServlet {
 	}
 
 
-	private String getResult(String eventname, int userid, int numtickets, int avail, int purchased) {
 
+	private int getResult(String eventname, int userid, int numtickets, int avail, int purchased) {
+
+		boolean isSuccess = false;
 		String resultJson = "";
 
 		DatabaseManager dbm1 = new DatabaseManager();
 		System.out.println("Connected to database");
 
-		int eventid = dbm1.eventsTableAddEntry(eventname, userid, numtickets, avail, purchased); 
-		dbm1.close();
-
-		if(eventid!=0) {
-			EventId eventId = new EventId(eventid);
-			Gson gson = new Gson();
-			resultJson = gson.toJson(eventId, EventId.class);
-		} else {
-			//result = new ResultEmpty("Event unsuccessfully created");
-			ResultEmpty errorJson = new ResultEmpty("Event unsuccessfully created");
-			Gson gson = new Gson();
-			resultJson = gson.toJson(errorJson, ResultEmpty.class);
+		int eventid = 0;
+		if(this.checkifUserExists(userid)) {
+			eventid = dbm1.eventsTableAddEntry(eventname, userid, numtickets, avail, purchased); 
 		}
 
-		//Gson gson = new Gson();
-		//AppParams eventid = gson.toJson(result, AppParams.class);
-		System.out.println("result:::::: " + /*resultJson*/ resultJson);
+		dbm1.close();
 
-		return resultJson;
+		System.out.println("result:::::: " + /*resultJson*/ eventid);
+
+		return eventid;
 	}
+
+	private boolean checkifUserExists(int userid) {
+		HttpConnection httpCon = null;
+		httpCon = new HttpConnection("http://localhost:7072/"+userid);
+
+		httpCon.setRequestMethod("GET");
+		httpCon.setRequestProperty("Content-Type", "application/json");
+		httpCon.connect();
+
+		String respStatus = httpCon.readResponseHeader().get(null).get(0);
+		System.out.println("EventsCreateServlet : check user : "
+				+ "respCode :" + httpCon.readResponseCode() +" : "+respStatus);
+		if(httpCon.readResponseCode() == 200) {
+			System.out.println("user exist, create event");
+			return true;
+		}
+
+		return false;
+	}
+
+
 
 }

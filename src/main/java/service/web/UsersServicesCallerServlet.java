@@ -10,8 +10,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
+import model.DatabaseManager;
+import model.objects.Event;
+import model.objects.Ticket;
+import model.objects.User;
+import model.objects.UserWs;
 
 /**
  * @author anuragjha
@@ -129,11 +136,15 @@ public class UsersServicesCallerServlet extends HttpServlet {
 	
 
 	private void postTransfer(HttpServletResponse resp, HttpServletRequest req) {
+		
+		String result = "";
+		
 		String httpBody = new HttpReqUtil().httpBody(req);
 		System.out.println("httpBody in postTransfer: " + httpBody);
 
 		String myUrl = "http://localhost:7072"+req.getPathInfo();
-		HttpConnection httpConn = new HttpConnection(myUrl);
+		HttpConnection httpConn = null;
+		httpConn = new HttpConnection(myUrl);
 		
 		httpConn.setDoOutput(true);
 		httpConn.setRequestMethod("POST");
@@ -152,21 +163,47 @@ public class UsersServicesCallerServlet extends HttpServlet {
 
 
 		// response - httpConn.readResponseBody()
-		try {
-			resp.getOutputStream().println(httpConn.readResponseBody());
-		} catch (IOException e) {
-			System.out.println("Error in getting output stream");
-			e.printStackTrace();
-		}	
+		//try {
+			if(httpConn.readResponseCode() == 200) {
+				resp.setStatus(HttpServletResponse.SC_OK);
+				result = httpConn.readResponseBody();
+			} else {
+				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				result = httpConn.readErrorResponseBody();
+			}
+			
+			resp.setContentType("application/json");
+			resp.setCharacterEncoding("UTF-8");
+			resp.setContentLength(result.length());
+
+			try {
+				resp.getWriter().println(result);
+				resp.getWriter().flush();
+			} catch (IOException e) {
+				System.out.println("Error in writing response");
+				e.printStackTrace();
+			}
+			
+			
+			
+			//resp.getOutputStream().println(httpConn.readResponseBody());
+//		} catch (IOException e) {
+//			System.out.println("Error in getting output stream");
+//			e.printStackTrace();
+//		}	
 
 	}
 
 
 	private void postCreate(HttpServletResponse resp, String httpBody) {
+		
+		String result = "";
+		
 		System.out.println("httpBody in postCreate: " + httpBody);
 
 		String myUrl = "http://localhost:7072/create";
-		HttpConnection httpConn = new HttpConnection(myUrl);
+		HttpConnection httpConn = null;
+		httpConn = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		httpConn.setDoOutput(true);
 		httpConn.setRequestMethod("POST");
@@ -186,7 +223,24 @@ public class UsersServicesCallerServlet extends HttpServlet {
 
 		// response - httpConn.readResponseBody()
 		try {
-			resp.getOutputStream().println(httpConn.readResponseBody());
+			if(httpConn.readResponseCode() == 200) {
+				resp.setStatus(HttpServletResponse.SC_OK);
+				result = httpConn.readResponseBody();
+				
+			} else {
+				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				result = httpConn.readErrorResponseBody();
+				System.out.println("error req body : " + result);
+	
+			}
+			
+			resp.setContentType("application/json");
+			resp.setCharacterEncoding("UTF-8");
+			resp.setContentLength(result.length());
+
+			resp.getWriter().println(result);
+			resp.getWriter().flush();
+		
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
 			e.printStackTrace();
@@ -199,19 +253,82 @@ public class UsersServicesCallerServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 
 		String myUrl = "http://localhost:7072/"+userid;
-		HttpConnection http = new HttpConnection(myUrl);
+		HttpConnection http = null;
+		http = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");
+		http.setRequestProperty("Content-Type", "application/json");
 		http.connect();
 
 		try {
-			resp.getOutputStream().println(http.readResponseHeader() + http.readResponseBody());
+			String userServiceResponse = http.readResponseBody();
+			resp.setContentType("application/json");
+			//resp.getOutputStream().println(http.readResponseBody());
+			
+			if(http.readResponseCode() == 200) {
+				System.out.println("in 200 ok response condition");
+				////
+				UserWs userWs = this.createResponseFromUserServiceResponse(userServiceResponse);
+				String finalResult = new Gson().toJson(userWs, UserWs.class);
+				////
+				resp.setStatus(HttpServletResponse.SC_OK);
+				resp.getOutputStream().println(finalResult);
+			
+			} else {
+				System.out.println("in 400 response condition");
+				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				resp.getOutputStream().println(http.readErrorResponseBody());
+			
+			}
+			
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
 			e.printStackTrace();
 		}
 
+	}
+
+
+	private UserWs createResponseFromUserServiceResponse(String userServiceResponseBody) {
+
+		User userDetails = new Gson().fromJson(userServiceResponseBody, User.class);
+		System.out.println("createResponseFromUserServiceResponse: " +
+				userDetails.getUserid() + " " + userDetails.getUsername());
+		
+		UserWs userWs = new UserWs(userDetails.getUserid(), userDetails.getUsername());//response object
+		
+		DatabaseManager dbm1 = new DatabaseManager();
+		System.out.println("Connected to database");
+		
+		for(Ticket ticket : userDetails.getTickets()) {
+			System.out.println("Event id: " + ticket.getEventid());
+			//////
+			userWs.addEvent(this.getEventDetails(ticket.getEventid()));
+			//////
+		}
+		
+		dbm1.close();
+		
+		return userWs;
+		
+	}
+
+
+	private Event getEventDetails(int eventid) {
+		HttpConnection httpCon = null;
+		httpCon = new HttpConnection("http://localhost:7071/"+eventid);
+
+		httpCon.setRequestMethod("GET");
+		httpCon.setRequestProperty("Content-Type", "application/json");
+
+		httpCon.setDoOutput(true);
+
+		httpCon.connect();
+
+		//String respStatus = httpCon.readResponseHeader().get(null).get(0);
+		Event thisEvent = new Gson().fromJson(httpCon.readResponseBody(), Event.class);
+		return thisEvent;
 	}
 
 

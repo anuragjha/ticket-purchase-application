@@ -10,9 +10,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cs601.project4.AppParams;
+import com.google.gson.Gson;
+
 import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
+import model.objects.AppParams;
+import model.objects.ResultEmpty;
 
 /**
  * @author anuragjha
@@ -38,9 +41,9 @@ public class EventsServicesCallerServlet extends HttpServlet {
 
 			System.out.println("good good -> get list of all events");
 			// in GET /events
-			
+
 			this.getEventsList(resp);
-			
+
 
 		} else {
 
@@ -58,7 +61,7 @@ public class EventsServicesCallerServlet extends HttpServlet {
 				this.getEvent(resp, subPaths[1]);
 			}
 			else { // /76!5
-				
+
 				System.out.println("bad bad : not correct");
 			}
 		}
@@ -82,9 +85,9 @@ public class EventsServicesCallerServlet extends HttpServlet {
 		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
 			System.out.println("good good -> in POST /events/create or create/"); 
 			//TODO : call event service api - POST /create
-			
+
 			this.postCreate(req, resp); ///////
-		
+
 		} else if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) 
 				&& subPaths[2].equals("purchase") && (subPaths[3].matches("[0-9]+"))  ) {
 
@@ -107,35 +110,36 @@ public class EventsServicesCallerServlet extends HttpServlet {
 		//	System.out.println("reqParams: " + reqParams.getTickets());
 		//}
 	}
-	
-	
+
+
 	////////////////////////////////////////////////////////
-	
-	
+
+
 	private void postPurchase(HttpServletRequest req, HttpServletResponse resp, String eventid, String userid) {
 		HttpReqUtil reqUtil =  new HttpReqUtil();
 		//String httpBody = reqUtil.httpBody(req);
-		
+
 		System.out.println("eventid from subpath: " + eventid);
 		System.out.println("userid from subpath: " + userid);
 		//System.out.println("httpBody in postPurchase: " + httpBody);
-		
+
 		//TODO: build correct path and body
 		AppParams appParams = reqUtil.reqParamsFromJsonBody(req);
 		System.out.println("tickets from body: " + appParams.getTickets());
-		
-		
-		
+
+
+
 		String myUrl = "http://localhost:7071/purchase/" + eventid;
-		HttpConnection httpConn = new HttpConnection(myUrl);
-		
+		HttpConnection httpConn = null;
+		httpConn = new HttpConnection(myUrl);
+
 		httpConn.setDoOutput(true);
 		httpConn.setRequestMethod("POST");
 		httpConn.setRequestProperty("Accept-Charset", "UTF-8");
 		httpConn.setRequestProperty("Content-Type", "application/json");
-		
+
 		httpConn.connect();
-		
+
 
 		String newReqBody = "{\n 	\"userid\": "+userid+","+ "\n	\"eventid\": "+
 				eventid+","+ "\n	\"tickets\": "+appParams.getTickets()+ "\n}";
@@ -147,34 +151,45 @@ public class EventsServicesCallerServlet extends HttpServlet {
 			System.out.println("Error in getting output stream");
 			e1.printStackTrace();
 		}
-		
+
 		// writing responsebody
 		try {
-			resp.getOutputStream().println(httpConn.readResponseBody());
+			resp.setContentType("application/json");
+			if(httpConn.readResponseHeader().get(null).get(0).equals("HTTP/1.1 200 OK")) {
+				resp.setStatus(HttpServletResponse.SC_OK);
+				resp.getOutputStream().println(httpConn.readResponseBody());
+				resp.getOutputStream().flush();
+			} else {
+				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				resp.getOutputStream().println(httpConn.readErrorResponseBody());
+				resp.getOutputStream().flush();
+			}
+			
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
 			e.printStackTrace();
 		}
-		
-		
+
+
 	}
-	
-	
+
+
 
 	private void postCreate(HttpServletRequest req, HttpServletResponse resp) {
 		String httpBody = new HttpReqUtil().httpBody(req);
 		System.out.println("httpBody in postCreate: " + httpBody);
-		
+
 		String myUrl = "http://localhost:7071/create";
-		HttpConnection httpConn = new HttpConnection(myUrl);
+		HttpConnection httpConn = null;
+		httpConn = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		httpConn.setDoOutput(true);
 		httpConn.setRequestMethod("POST");
 		httpConn.setRequestProperty("Accept-Charset", "UTF-8");
 		httpConn.setRequestProperty("Content-Type", "application/json");
-		
+
 		httpConn.connect();
-		
+
 		try {
 			httpConn.getConn().getOutputStream().write(httpBody.getBytes("UTF-8")); 
 			httpConn.getConn().getOutputStream().flush();
@@ -182,59 +197,102 @@ public class EventsServicesCallerServlet extends HttpServlet {
 			System.out.println("Error in getting output stream");
 			e1.printStackTrace();
 		}
-		
-		
+
 		// response - httpConn.readResponseBody() - in post create
 		try {
-			//resp.setStatus(HttpServletResponse.SC_OK);
-			//resp.setContentType("application/json");
+			System.out.println("in read response of EventsServicesServlet");
 			
+			String respStatus = httpConn.readResponseHeader().get(null).get(0);
 			
-			//System.out.println("Reaching here - read response of EventsServicesServlet");
-			//String responseBody = httpConn.readResponseBody();
-			//resp.getWriter().println(responseBody);
-			//resp.getWriter().flush();
-			System.out.println("!!!!!!!!!!! here - read response of EventsServicesServlet");
-			resp.getOutputStream().println(httpConn.readResponseBody()); //error here
+			resp.setContentType("application/json");
+			
+			if(respStatus.contains("200")) {
+				System.out.println("in 200 ok response condition");
+				resp.setStatus(HttpServletResponse.SC_OK);
+				resp.getOutputStream().println(httpConn.readResponseBody());
+			
+			} else {
+				System.out.println("in 400 response condition");
+				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				resp.getOutputStream().println(httpConn.readErrorResponseBody());
+			
+			}
+			
+
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
 			e.printStackTrace();
 		}	
-		
+
 	}
 
 	private void getEventsList(HttpServletResponse resp) {
 		String myUrl = "http://localhost:7071/list";
-		HttpConnection http = new HttpConnection(myUrl);
+		HttpConnection http = null;
+		http = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");
 		http.connect();
 
 		try {
-			resp.setStatus(HttpServletResponse.SC_OK);
+			String respBody = http.readResponseBody();
+			
 			resp.setContentType("application/json");
-			resp.getOutputStream().println(http.readResponseBody());
+			if(respBody.contains("{\"eventList\":[]}")) {   //// check after change
+				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				
+				ResultEmpty re = new ResultEmpty("No events found");
+				respBody = new Gson().toJson(re, ResultEmpty.class);
+				
+				resp.getOutputStream().println(respBody);
+			
+			} else {
+			
+				resp.setStatus(HttpServletResponse.SC_OK);
+				resp.getOutputStream().println(respBody);
+			}
+			
+
+			
+			
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
 			e.printStackTrace();
 		}	
 	}
-	
-	
+
+
 	private void getEvent(HttpServletResponse resp, String eventid) {
 		// TODO Auto-generated method stub
 		String myUrl = "http://localhost:7071/"+eventid;
-		HttpConnection http = new HttpConnection(myUrl);
+		HttpConnection http = null;
+		http = new HttpConnection(myUrl);
 		//http.fetch(myUrl);
 		http.setRequestMethod("GET");
 		http.setRequestProperty("Accept-Charset", "UTF-8");
+		http.setRequestProperty("Content-Type", "application/json");
 		http.connect();
 
-		try {
-			//resp.setStatus(HttpServletResponse.SC_OK);
-			//resp.setContentType("application/json");
-			resp.getOutputStream().println(http.readResponseBody());
+		try {  // response
+			resp.setContentType("application/json");
+			
+			String respStatus = http.readResponseHeader().get(null).get(0);
+			
+			if(respStatus.contains("200")) {
+				System.out.println("in 200 ok response condition");
+				resp.setStatus(HttpServletResponse.SC_OK);
+				resp.getOutputStream().println(http.readResponseBody());
+			
+			} else {
+				System.out.println("in 400 response condition");
+				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				resp.getOutputStream().println(http.readErrorResponseBody());
+			
+			}
+			
+			//resp.getOutputStream().println(http.readResponseBody());
+		
 		} catch (IOException e) {
 			System.out.println("Error in getting output stream");
 			e.printStackTrace();
