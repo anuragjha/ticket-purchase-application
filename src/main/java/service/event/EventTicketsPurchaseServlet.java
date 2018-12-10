@@ -5,6 +5,7 @@ package service.event;
 
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
 import cs601.project4.AppConstants;
+import cs601.project4.Project4Logger;
 import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
 import httpUtil.HttpRespUtil;
@@ -40,10 +42,12 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 		boolean isSuccess = false;
 		String result = "";
 
-		System.out.println(req.getRequestURI());
-
+		System.out.println("in doPost of EventTicketsPurchase" + req.getRequestURI());
+		
 		String[] subPaths = req.getRequestURI().split("/");
-
+		
+		Project4Logger.write(Level.INFO, "Request : " + req.getRequestURI(), 1);
+		
 		if((subPaths.length == 3) && (subPaths[1].equals("purchase")) &&
 				(subPaths[2].matches("[0-9]+")) && (Integer.parseInt(subPaths[2]) > 0)) {
 			
@@ -89,7 +93,7 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 	 * @param tickets
 	 * @return
 	 */
-	private boolean getResult(int userid, int eventid, int tickets) {
+	private synchronized boolean getResult(int userid, int eventid, int tickets) {
 
 		if(this.checkAndUpdateEventTable(eventid, tickets)) {
 			if(this.addUserTickets(userid, eventid, tickets)) {

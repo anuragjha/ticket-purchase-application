@@ -4,6 +4,7 @@
 package service.user;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import cs601.project4.Project4Logger;
 import httpUtil.HttpReqUtil;
 import httpUtil.HttpRespUtil;
 import model.DatabaseManager;
@@ -33,11 +35,12 @@ public class UserCreateServlet extends HttpServlet {
 		String result = "";
 		int userid = 0;
 
-		System.out.println("in doPost of UserCreateServlet");
-		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
+		System.out.println("in doPost of UserCreateServlet "+ req.getRequestURI());
 
 		String[] subPaths = req.getRequestURI().split("/");
 
+		Project4Logger.write(Level.INFO, "Request : " + req.getRequestURI(), 1);
+		
 		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
 
 			AppParams appParams = new HttpReqUtil().reqParamsFromJsonBody(req);
@@ -82,7 +85,7 @@ public class UserCreateServlet extends HttpServlet {
 	 * @param username
 	 * @return
 	 */
-	public int getResult(String username) {
+	public synchronized int getResult(String username) {
 
 		int userid = 0;
 		DatabaseManager dbm1 = new DatabaseManager();

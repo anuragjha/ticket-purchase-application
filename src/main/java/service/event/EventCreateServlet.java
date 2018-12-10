@@ -4,6 +4,7 @@
 package service.event;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
 import cs601.project4.AppConstants;
+import cs601.project4.Project4Logger;
 import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
 import httpUtil.HttpRespUtil;
@@ -34,7 +36,9 @@ public class EventCreateServlet extends HttpServlet {
 		String result = "";
 
 		String[] subPaths = req.getRequestURI().split("/");
-
+		
+		Project4Logger.write(Level.INFO, "Request : " + req.getRequestURI(), 1);
+		
 		int eventid = 0;
 		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
 
@@ -43,7 +47,7 @@ public class EventCreateServlet extends HttpServlet {
 			if((!appParams.getEventname().equals("")) && (appParams.getNumtickets() > 0) && 
 					(appParams.getUserid() > 0)) {
 
-
+				
 				eventid = this.getResult(appParams.getEventname(), appParams.getUserid(), 
 						appParams.getNumtickets(), appParams.getNumtickets(), 0);
 
@@ -87,7 +91,7 @@ public class EventCreateServlet extends HttpServlet {
 	 * @param purchased
 	 * @return
 	 */
-	private int getResult(String eventname, int userid, int numtickets, int avail, int purchased) {
+	private synchronized int getResult(String eventname, int userid, int numtickets, int avail, int purchased) {
 
 		DatabaseManager dbm1 = new DatabaseManager();
 		System.out.println("Connected to database");

@@ -5,6 +5,7 @@ package service.event;
 
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import cs601.project4.Project4Logger;
 import httpUtil.HttpRespUtil;
 import model.DatabaseManager;
 import model.objects.Event;
@@ -31,15 +33,11 @@ public class EventDetailsServlet extends HttpServlet {
 
 		String result = "";
 
-		System.out.println("in doGet of EventDetailsServlet");
-
-		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
+		System.out.println("in doGet of EventDetailsServlet "+ req.getRequestURI());
 
 		String[] subPaths = req.getPathInfo().split("/");
-		System.out.println("length: " + subPaths.length);
-		for(String path : subPaths) {
-			System.out.println("subpaths: " + path);
-		}
+
+		Project4Logger.write(Level.INFO, "Request : " + req.getRequestURI(), 1);
 
 		if((subPaths.length == 2) && (subPaths[1].matches("[0-9]+")) && 
 				(Integer.parseInt(subPaths[1]) > 0)) {
@@ -85,9 +83,9 @@ public class EventDetailsServlet extends HttpServlet {
 	 * @param eventid
 	 * @return
 	 */
-	private Event getResult(int eventid) {
+	private synchronized Event getResult(int eventid) {
 
-		String resultJson  = "";
+//		String resultJson  = "";
 
 		DatabaseManager dbm1 = new DatabaseManager();
 		System.out.println("Connected to database");

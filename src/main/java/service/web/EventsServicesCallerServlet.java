@@ -4,6 +4,7 @@
 package service.web;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
 import cs601.project4.AppConstants;
+import cs601.project4.Project4Logger;
 import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
 import httpUtil.HttpRespUtil;
@@ -30,6 +32,8 @@ public class EventsServicesCallerServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		System.out.println("in doGET of EventsServiceServlet" + req.getRequestURI());
+		
+		Project4Logger.write(Level.INFO, "Request : " + req.getRequestURI(), 1);
 
 		if((req.getPathInfo() == null) || (req.getPathInfo().equals("/"))) {
 
@@ -57,6 +61,8 @@ public class EventsServicesCallerServlet extends HttpServlet {
 		System.out.println("in doPost of EventsServiceServlet" + req.getRequestURI());
 
 		String[] subPaths = req.getPathInfo().split("/");
+		
+		Project4Logger.write(Level.INFO, "Request : " + req.getRequestURI(), 1);
 
 		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
 			System.out.println("good good -> in POST /events/create or create/"); 

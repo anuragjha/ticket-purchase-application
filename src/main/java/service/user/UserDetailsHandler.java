@@ -5,6 +5,7 @@ package service.user;
 
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import cs601.project4.Project4Logger;
 import httpUtil.HttpRespUtil;
 import model.DatabaseManager;
 import model.objects.Event;
@@ -39,6 +41,8 @@ public class UserDetailsHandler {
 
 		String[] subPaths = req.getPathInfo().split("/");
 
+		Project4Logger.write(Level.INFO, "Request : " + req.getRequestURI(), 1);
+		
 		if((subPaths.length == 2) && (subPaths[1].matches("[0-9]+")) && 
 				(Integer.parseInt(subPaths[1]) > 0)) {
 			result = this.getResult(resp, Integer.parseInt(subPaths[1]));
@@ -62,7 +66,7 @@ public class UserDetailsHandler {
 	 * @param userid
 	 * @return
 	 */
-	private String getResult(HttpServletResponse resp, int userid) {
+	private synchronized String getResult(HttpServletResponse resp, int userid) {
 		String resultJson  = "";
 
 		DatabaseManager dbm1 = new DatabaseManager();

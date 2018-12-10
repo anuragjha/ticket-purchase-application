@@ -4,6 +4,7 @@
 package service.web;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import cs601.project4.AppConstants;
+import cs601.project4.Project4Logger;
 import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
 import httpUtil.HttpRespUtil;
@@ -35,6 +37,8 @@ public class UsersServicesCallerServlet extends HttpServlet {
 		System.out.println("in doGET of UsersServlet" +req.getRequestURI());
 
 		String[] subPaths = req.getPathInfo().split("/");
+		
+		Project4Logger.write(Level.INFO, "Request : " + req.getRequestURI(), 1);
 
 		if((subPaths.length == 2) && subPaths[1].matches("[0-9]+")) {
 
@@ -54,6 +58,8 @@ public class UsersServicesCallerServlet extends HttpServlet {
 		System.out.println("in doPost of UsersServlet" + req.getRequestURI());
 
 		String[] subPaths = req.getPathInfo().split("/");
+		
+		Project4Logger.write(Level.INFO, "Request : " + req.getRequestURI(), 1);
 
 		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
 
@@ -138,7 +144,7 @@ public class UsersServicesCallerServlet extends HttpServlet {
 	 * @param resp
 	 * @param userid
 	 */
-	private void getUser(HttpServletResponse resp, String userid) {
+	private synchronized void getUser(HttpServletResponse resp, String userid) {
 
 		String result = "";
 
