@@ -11,7 +11,7 @@ import cs601.project4.AppConstants;
 
 /**
  * @author anuragjha
- *
+ * DatabaseConnector loads database driver and connects to database
  */
 public class DatabaseConnector {
 

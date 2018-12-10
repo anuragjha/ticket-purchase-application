@@ -18,6 +18,7 @@ import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
 import httpUtil.HttpRespUtil;
 import model.DatabaseManager;
+import model.objects.AddTicketsReq;
 import model.objects.AppParams;
 import model.objects.Event;
 import model.objects.ResultEmpty;
@@ -155,8 +156,13 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 		httpCon.setDoOutput(true);
 		try {
 			httpCon.getConn().connect();
-			httpCon.writeRequestBody(
-					"{ \"eventid\": "+eventid+", \"tickets\": "+tickets+" }");
+			
+			AddTicketsReq tr = new AddTicketsReq(eventid, tickets);
+			String reqBody = new Gson().toJson(tr, AddTicketsReq.class);
+			System.out.println("reqBody : " + reqBody);
+			httpCon.writeRequestBody(reqBody);
+				//	"{ \"eventid\": "+eventid+", \"tickets\": "+tickets+" }");
+			
 
 			String respStatus = httpCon.readResponseHeader().get(null).get(0);
 			System.out.println("EventsTicketsPurchase : addUserTickets : "

@@ -5,7 +5,7 @@ package cs601.project4;
 
 /**
  * @author anuragjha
- *
+ * AppConstants class contains config parameters
  */
 public class AppConstants {
 

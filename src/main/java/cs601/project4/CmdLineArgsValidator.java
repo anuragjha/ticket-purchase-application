@@ -7,7 +7,7 @@ import java.io.File;
 
 /**
  * @author anuragjha
- *
+ * CmdLineArgsValidator checks for cmd line input
  */
 public class CmdLineArgsValidator {
 

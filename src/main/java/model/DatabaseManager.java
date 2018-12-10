@@ -12,7 +12,7 @@ import cs601.project4.AppConstants;
 
 /**
  * @author anuragjha
- *
+ * DatabaseManager holds prepared statements and queries or update data base 
  */
 public class DatabaseManager {
 
@@ -27,9 +27,6 @@ public class DatabaseManager {
 	 * constructor
 	 */
 	public DatabaseManager() {
-		
-		
-		//System.out.println("db connect : " + username + password + db);
 
 		con = DatabaseConnector.connectToDataBase(username, 
 				password, db);
@@ -117,7 +114,7 @@ public class DatabaseManager {
 		return getTicketsTableDeleteNoOfTickets(userid, eventid, tickets);
 	}
 
-	///////////////////////TODO: dividing marker
+	///////////////////////
 
 
 	private synchronized int getEventsTableAddEntry(String eventname, int userid, int numtickets, 
