@@ -17,12 +17,12 @@ import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
 import httpUtil.HttpRespUtil;
 import model.objects.AppParams;
+import model.objects.PurchaseReq;
 import model.objects.ResultEmpty;
 
 /**
  * @author anuragjha
- *  // if request for event is correct -> then create HTTP request and send to one of the "Event Server"
- *
+ *  EventsServicesCallerServlet class for Web Service uses Events Service
  */
 public class EventsServicesCallerServlet extends HttpServlet {
 
@@ -66,7 +66,7 @@ public class EventsServicesCallerServlet extends HttpServlet {
 		} else if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) 
 				&& subPaths[2].equals("purchase") && (subPaths[3].matches("[0-9]+"))  ) {
 
-//			AppParams params = new AppParams();
+			//			AppParams params = new AppParams();
 			this.postPurchase(req, resp, subPaths[1], subPaths[3]);
 		}
 		else {
@@ -79,10 +79,16 @@ public class EventsServicesCallerServlet extends HttpServlet {
 
 	////////////////////////////////////////////////////////
 
-
+	/**
+	 * postPurchase method handles purchasing of ticket
+	 * @param req
+	 * @param resp
+	 * @param eventid
+	 * @param userid
+	 */
 	private void postPurchase(HttpServletRequest req, HttpServletResponse resp, 
 			String eventid, String userid) {
-		
+
 		HttpReqUtil reqUtil =  new HttpReqUtil();
 
 		AppParams appParams = reqUtil.reqParamsFromJsonBody(req);
@@ -91,185 +97,106 @@ public class EventsServicesCallerServlet extends HttpServlet {
 		HttpConnection httpConn = null;
 		httpConn = new HttpConnection(myUrl);
 
-		
-		
-//		httpConn.setRequestMethod("POST");
-//		httpConn.setDoOutput(true);
-//		
-//		httpConn.setRequestProperty("Accept-Charset", "UTF-8");
-//		httpConn.setRequestProperty("Content-Type", "application/json");
-//
-//		httpConn.connect();
-		
-		
 		httpConn.connectPostRequest();
 
-		String newReqBody = "{\n 	\"userid\": "+userid+","+ "\n	\"eventid\": "+
-				eventid+","+ "\n	\"tickets\": "+appParams.getTickets()+ "\n}";
-//		System.out.println("new Req body: \n" + newReqBody);
+		PurchaseReq pr = new PurchaseReq(Integer.parseInt(userid),
+				Integer.parseInt(eventid), appParams.getTickets());
+		String newReqBody = new Gson().toJson(pr, PurchaseReq.class);
 		
-		
-//		try {
-//			httpConn.getConn().getOutputStream().write(newReqBody.getBytes("UTF-8")); 
-//			httpConn.getConn().getOutputStream().flush();
-//		} catch (IOException e1) {
-//			System.out.println("Error in getting output stream");
-//			e1.printStackTrace();
-//		}
-		
+//		String newReqBody = "{\n 	\"userid\": "+userid+","+ "\n	\"eventid\": "+
+//				eventid+","+ "\n	\"tickets\": "+appParams.getTickets()+ "\n}";
+
 		httpConn.writeRequestBody(newReqBody);
 
 		// writing responsebody
-			resp.setContentType("application/json");
-//			if(httpConn.readResponseHeader().get(null).get(0).equals("HTTP/1.1 200 OK")) {
-			if(httpConn.readResponseCode() == 200) {
-				resp.setStatus(HttpServletResponse.SC_OK);
-//				resp.getOutputStream().println(httpConn.readResponseBody());
-//				resp.getOutputStream().flush();
-				
-			} else {
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//				resp.getOutputStream().println(httpConn.readErrorResponseBody());
-//				resp.getOutputStream().flush();
-			}
+		if(httpConn.readResponseCode() == 200) {
+			resp.setStatus(HttpServletResponse.SC_OK);
 			new HttpRespUtil().writeResponse(resp, httpConn.readResponseBody());
-			
-	
-
-
+		} else {
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			new HttpRespUtil().writeResponse(resp, httpConn.readErrorResponseBody());
+		}
 	}
 
 
-
+	/**
+	 * postCreate method handles Event Service Create
+	 * @param req
+	 * @param resp
+	 */
 	private void postCreate(HttpServletRequest req, HttpServletResponse resp) {
+		
 		String httpBody = new HttpReqUtil().httpBody(req);
 
 		String myUrl = AppConstants.getInit().getBasepathEventService()+"/create";
 		HttpConnection httpConn = null;
 		httpConn = new HttpConnection(myUrl);
-		
-		
+
 		httpConn.connectPostRequest();
-		
-		
-		
-//		httpConn.setDoOutput(true);
-//		httpConn.setRequestMethod("POST");
-//		httpConn.setRequestProperty("Accept-Charset", "UTF-8");
-//		httpConn.setRequestProperty("Content-Type", "application/json");
-//
-//		httpConn.connect();
+
 		httpConn.writeRequestBody(httpBody);
-//		try {
-//			httpConn.getConn().getOutputStream().write(httpBody.getBytes("UTF-8")); 
-//			httpConn.getConn().getOutputStream().flush();
-//		} catch (IOException e1) {
-//			System.out.println("Error in getting output stream");
-//			e1.printStackTrace();
-//		}
 
-		// response - httpConn.readResponseBody() - in post create
-//		try {
-			System.out.println("in read response of EventsServicesServlet");
+		if(httpConn.readResponseCode() == 200) {
+			resp.setStatus(HttpServletResponse.SC_OK);
+			new HttpRespUtil().writeResponse(resp, httpConn.readResponseBody());
 
-//			String respStatus = httpConn.readResponseHeader().get(null).get(0);
+		} else {
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			new HttpRespUtil().writeResponse(resp, httpConn.readErrorResponseBody());
 
-//			resp.setContentType("application/json");
-
-//			if(respStatus.contains("200")) {
-			if(httpConn.readResponseCode() == 200) {
-				resp.setStatus(HttpServletResponse.SC_OK);
-//				resp.getOutputStream().println(httpConn.readResponseBody());
-				new HttpRespUtil().writeResponse(resp, httpConn.readResponseBody());
-
-			} else {
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				//resp.getOutputStream().println(httpConn.readErrorResponseBody());
-				new HttpRespUtil().writeResponse(resp, httpConn.readErrorResponseBody());
-
-			}
-
-
-//		} catch (IOException e) {
-//			System.out.println("Error in getting output stream");
-//			e.printStackTrace();
-//		}	
-
+		}
 	}
+	
 
+	/**
+	 * getEventsList method handles request for Event List
+	 * @param resp
+	 */
 	private void getEventsList(HttpServletResponse resp) {
-		//		String myUrl = "http://localhost:7071/list";
+
 		String myUrl = AppConstants.getInit().getBasepathEventService()+"/list";
 		HttpConnection http = null;
 		http = new HttpConnection(myUrl);
 
-		
-//		http.setRequestMethod("GET");
-//		http.setRequestProperty("Accept-Charset", "UTF-8");
-//		http.connect();
-		
 		http.connectGetRequest();
-
-
+		
 		//reading response
 		String respBody = http.readResponseBody();
 
-		resp.setContentType("application/json");
 		if(respBody.length() < 5) {
+			
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
 			ResultEmpty re = new ResultEmpty("No events found");
-			respBody = new Gson().toJson(re, ResultEmpty.class);
-
-			//	////////////////			resp.getOutputStream().println(respBody);
-			new HttpRespUtil().writeResponse(resp, respBody); 
+			respBody = new Gson().toJson(re, ResultEmpty.class); 
 
 		} else {
-
 			resp.setStatus(HttpServletResponse.SC_OK);
-			//				resp.getOutputStream().println(respBody);
-			new HttpRespUtil().writeResponse(resp, respBody);
-		}	
+
+		}
+		new HttpRespUtil().writeResponse(resp, respBody);
 	}
 
-
+	/**
+	 * getEvent method handles request for a detail of a event
+	 * @param resp
+	 * @param eventid
+	 */
 	private void getEvent(HttpServletResponse resp, String eventid) {
-		// TODO Auto-generated method stub
-		//String myUrl = "http://localhost:7071/"+eventid;
+
 		String myUrl = AppConstants.getInit().getBasepathEventService()+"/"+eventid;
 		HttpConnection http = null;
 		http = new HttpConnection(myUrl);
-		//http.fetch(myUrl);
-//		http.setRequestMethod("GET");
-//		http.setRequestProperty("Accept-Charset", "UTF-8");
-//		http.setRequestProperty("Content-Type", "application/json");
-//		http.connect();
+
 		http.connectGetRequest();
 
-//		try {  // response
-			resp.setContentType("application/json");
+		if(http.readResponseCode() == 200) {	
+			resp.setStatus(HttpServletResponse.SC_OK);
+			new HttpRespUtil().writeResponse(resp, http.readResponseBody());
 
-			//String respStatus = http.readResponseHeader().get(null).get(0);
-
-//			if(respStatus.contains("200")) {
-			if(http.readResponseCode() == 200) {	
-				resp.setStatus(HttpServletResponse.SC_OK);
-//				resp.getOutputStream().println(http.readResponseBody());
-				new HttpRespUtil().writeResponse(resp, http.readResponseBody());
-
-			} else {
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				//resp.getOutputStream().println(http.readErrorResponseBody());
-				new HttpRespUtil().writeResponse(resp, http.readErrorResponseBody());
-
-			}
-
-			//resp.getOutputStream().println(http.readResponseBody());
-
-//		} catch (IOException e) {
-//			System.out.println("Error in getting output stream");
-//			e.printStackTrace();
-//		}	
+		} else {
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			new HttpRespUtil().writeResponse(resp, http.readErrorResponseBody());
+		}	
 	}
 
 

@@ -23,16 +23,9 @@ import model.objects.EventList;
 
 /**
  * @author anuragjha
- *
+ * EventsListServlet class handles Event List request
  */
 public class EventsListServlet extends HttpServlet {
-
-	/**
-	 * 
-	 */
-	public EventsListServlet() {
-		// TODO Auto-generated constructor stub
-	}
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -56,7 +49,10 @@ public class EventsListServlet extends HttpServlet {
 		}
 	}
 	
-	
+	/**
+	 * getResult implements the Events List functionality
+	 * @return
+	 */
 	private String getResults() {
 		DatabaseManager dbm1 = new DatabaseManager();
 		System.out.println("Connected to database");

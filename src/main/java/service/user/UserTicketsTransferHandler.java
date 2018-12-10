@@ -20,20 +20,26 @@ import model.objects.ResultOK;
 
 /**
  * @author anuragjha
- *
+ * UserTicketsTransferHandler class handles User tickets transfer request
  */
 public class UserTicketsTransferHandler {
 
-
-	protected synchronized void handle(HttpServletRequest req, HttpServletResponse resp)
+	/**
+	 * 
+	 * @param req
+	 * @param resp
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void handle(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
 		String result = "";
 		boolean isSuccess = false;
 
-		System.out.println("in doPost of UserEventTicketsTransferServlet");
+		System.out.println();
 
-		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
+		System.out.println("in doPost of UserEventTicketsTransferServlet "+ req.getRequestURI());
 
 		String[] subPaths = req.getRequestURI().split("/");
 
@@ -53,13 +59,14 @@ public class UserTicketsTransferHandler {
 		result = this.setResponse(resp, isSuccess);
 
 		new HttpRespUtil().writeResponse(resp, result); 
-
-		System.out.println("good good request");
-
-
 	}
 
-
+	/**
+	 * setResponse method creates response body
+	 * @param resp
+	 * @param isSuccess
+	 * @return
+	 */
 	private String setResponse(HttpServletResponse resp, boolean isSuccess) {
 		if(isSuccess) {
 			resp.setStatus(HttpServletResponse.SC_OK);
@@ -72,7 +79,14 @@ public class UserTicketsTransferHandler {
 		}
 	}
 
-
+	/**
+	 * getResult implements the User tickets add functionality
+	 * @param userid
+	 * @param eventid
+	 * @param tickets
+	 * @param targetuser
+	 * @return
+	 */
 	private boolean getResult(int userid, int eventid, int tickets, int targetuser) {
 		boolean correct = false;
 		DatabaseManager dbm1 = new DatabaseManager();
@@ -80,14 +94,14 @@ public class UserTicketsTransferHandler {
 
 		boolean usersExistAndEnoughTickets = false;
 
-		String user = dbm1.userTableGetEntry(userid); //"" or otherwise
+		String user = dbm1.userTableGetEntry(userid);
 		String targetUser = dbm1.userTableGetEntry(targetuser);
 		int userTickets = dbm1.ticketsTableGetNoOfTickets(userid, eventid);
 
 		if((!user.equals("")) && (!targetUser.equals("")) && ((userTickets - tickets) >=0)) {
 			usersExistAndEnoughTickets = true;
 		}
-		//boolean eventCheck = this.checkEventsTable(eventid, tickets); //http req
+		
 		int ticketDone = 0;
 		if(usersExistAndEnoughTickets) {
 
@@ -108,9 +122,6 @@ public class UserTicketsTransferHandler {
 		}
 
 		dbm1.close();
-
-		System.out.println("reyturn of getResult:::::: " + /*resultJson*/ ticketDone);
-
 		return correct;
 	}
 

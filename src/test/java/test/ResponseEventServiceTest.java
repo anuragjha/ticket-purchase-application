@@ -5,10 +5,12 @@ package test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-
+import org.junit.Before;
 import org.junit.Test;
 
+import cs601.project4.AppConstants;
+import cs601.project4.InitJsonReader;
+import cs601.project4.Project4Init;
 import httpUtil.HttpConnection;
 
 /**
@@ -18,11 +20,22 @@ import httpUtil.HttpConnection;
 public class ResponseEventServiceTest {
 
 
+	@Before
+	public void initialize() {
+		Project4Init init = (Project4Init) InitJsonReader.
+				project4InitJsonReader("project4Init.json", Project4Init.class);
+		AppConstants.setInit(init);
+	}
+
 	//Event service  - get a event list
 	@Test  
 	public void getEventListTest() {  
+
+
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7071/list");
+
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/list");
+
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -43,7 +56,7 @@ public class ResponseEventServiceTest {
 	@Test  
 	public void getEventDetailsTest() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7071/63");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/63");
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -63,7 +76,7 @@ public class ResponseEventServiceTest {
 	@Test  
 	public void getEventDetailsTest2() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7071/6430");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/6430");
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -84,7 +97,7 @@ public class ResponseEventServiceTest {
 	@Test  
 	public void postEventCreateTest() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7071/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -109,7 +122,7 @@ public class ResponseEventServiceTest {
 	@Test  
 	public void postEventCreateTest1() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7071/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -134,7 +147,7 @@ public class ResponseEventServiceTest {
 	@Test  
 	public void postEventCreateTest2() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7071/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -159,7 +172,7 @@ public class ResponseEventServiceTest {
 	@Test  
 	public void getEventPurchaseTest() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7071/purchase/60");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/purchase/60");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -185,7 +198,7 @@ public class ResponseEventServiceTest {
 	@Test  
 	public void getEventPurchaseTest1() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7071/purchase/61");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/purchase/61");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -195,7 +208,7 @@ public class ResponseEventServiceTest {
 		httpCon.connect();
 
 		//String reqBody = "{ \"userid\": 2, \"eventid\": 2, \"tickets\": 6 }";
-		String reqBody = "{ \"userid\": 1, \"eventid\": 60, \"tickets\": 15 }";
+		String reqBody = "{ \"userid\": 1, \"eaventid\": 60, \"tickets\": 15 }";
 		httpCon.writeRequestBody(reqBody);
 
 
@@ -209,7 +222,7 @@ public class ResponseEventServiceTest {
 	@Test  
 	public void getEventPurchaseTest2() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7071/purchase/2");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/purchase/2");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -233,7 +246,7 @@ public class ResponseEventServiceTest {
 	@Test  
 	public void getEventPurchaseTest3() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7071/purchase/2");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/purchase/2");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");

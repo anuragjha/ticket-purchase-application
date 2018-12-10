@@ -20,7 +20,7 @@ import model.objects.ResultEmpty;
 
 /**
  * @author anuragjha
- *
+ * EventDetailsServlet class handles Event Detail request
  */
 public class EventDetailsServlet extends HttpServlet {
 
@@ -28,9 +28,9 @@ public class EventDetailsServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
+
 		String result = "";
-		
+
 		System.out.println("in doGet of EventDetailsServlet");
 
 		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
@@ -46,9 +46,9 @@ public class EventDetailsServlet extends HttpServlet {
 			System.out.println("good good -> in get /{eventid}/: /"+subPaths[1]); 
 
 			Event event = this.getResult(Integer.parseInt(subPaths[1]));
-			
+
 			result = this.setResponse(resp, event);
-			
+
 			new HttpRespUtil().writeResponse(resp, result); 
 
 		} else {
@@ -57,17 +57,22 @@ public class EventDetailsServlet extends HttpServlet {
 		}
 	}
 
-	
-	
+
+	/**
+	 * setResponse method create response body
+	 * @param resp
+	 * @param event
+	 * @return
+	 */
 	private String setResponse(HttpServletResponse resp, Event event) {
 		if((event.getEventid() != 0)) {
-						
+
 			resp.setStatus(HttpServletResponse.SC_OK);
 			return new Gson().toJson(event, Event.class);	
 
 		} else {
 			ResultEmpty errorJson = new ResultEmpty("Event not found");
-			
+
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new Gson().toJson(errorJson, ResultEmpty.class);
 
@@ -75,7 +80,11 @@ public class EventDetailsServlet extends HttpServlet {
 	}
 
 
-
+	/**
+	 * getResult implements the Events Detail functionality
+	 * @param eventid
+	 * @return
+	 */
 	private Event getResult(int eventid) {
 
 		String resultJson  = "";
@@ -88,53 +97,8 @@ public class EventDetailsServlet extends HttpServlet {
 		Event event = new Event(result);
 		dbm1.close();
 
-//		if(event.getEventid() != 0) {
-//			Gson gson = new Gson();
-//			resultJson = new Gson().toJson(event, Event.class);
-//			System.out.println("result:::::: " + resultJson);
-//
-//		} else {
-//			System.out.println("Event not found");
-//			ResultEmpty errorJson = new ResultEmpty("Event not found");
-//			Gson gson = new Gson();
-//			resultJson = gson.toJson(errorJson, ResultEmpty.class);
-//			System.out.println("resultJson: " + resultJson);
-//
-//		}
-
 		return event;
 	}
-	
-	
-//	private String getResult(int eventid) {
-//
-//		String resultJson  = "";
-//
-//		DatabaseManager dbm1 = new DatabaseManager();
-//		System.out.println("Connected to database");
-//
-//		ResultSet result = dbm1.eventsTableGetEventDetails(eventid);  //get event list
-//
-//		Event event = new Event(result);
-//		dbm1.close();
-//
-//		if(event.getEventid() != 0) {
-//			Gson gson = new Gson();
-//			resultJson = gson.toJson(event, Event.class);
-//			System.out.println("result:::::: " + resultJson);
-//
-//		} else {
-//			System.out.println("Event not found");
-//			ResultEmpty errorJson = new ResultEmpty("Event not found");
-//			Gson gson = new Gson();
-//			resultJson = gson.toJson(errorJson, ResultEmpty.class);
-//			System.out.println("resultJson: " + resultJson);
-//
-//		}
-//
-//		return resultJson;
-//	}
-
 
 
 }

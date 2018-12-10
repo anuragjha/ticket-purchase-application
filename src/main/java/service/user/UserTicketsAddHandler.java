@@ -23,26 +23,25 @@ import model.objects.UserId;
 
 /**
  * @author anuragjha
- *
+ * UserTicketsAddHandler class handles User ticket add request
  */
 public class UserTicketsAddHandler {
 
-
-	protected synchronized void handle(HttpServletRequest req, HttpServletResponse resp)
+	/**
+	 * handle method handles tickets add request
+	 * @param req
+	 * @param resp
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void handle(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-
+		System.out.println("in doPost of UserEventTicketsAddServlet "+ req.getRequestURI());
+		
 		String result = "";
 		boolean isSuccess = false;
 
-		System.out.println("in doPost of UserEventTicketsAddServlet");
-
-		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI());
-
 		String[] subPaths = req.getRequestURI().split("/");
-		System.out.println("length: " + subPaths.length);
-		for(String path : subPaths) {
-			System.out.println("subpaths: " + path);
-		}
 
 		if((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) && 
 				(subPaths[2].equals("tickets")) && (subPaths[3].equals("add")) ) {
@@ -63,7 +62,12 @@ public class UserTicketsAddHandler {
 
 	}
 
-
+	/**
+	 * setResponse method creates response body
+	 * @param resp
+	 * @param isSuccess
+	 * @return
+	 */
 	private String setResponse(HttpServletResponse resp, boolean isSuccess) {
 		if(isSuccess) {
 			resp.setStatus(HttpServletResponse.SC_OK);
@@ -76,22 +80,27 @@ public class UserTicketsAddHandler {
 		}
 	}
 
-
+	/**
+	 * getResult implements the User tickets add functionality
+	 * @param userid
+	 * @param eventid
+	 * @param tickets
+	 * @return
+	 */
 	private boolean getResult(int userid, int eventid, int tickets) {
 		//String resultJson = "";
 		boolean correct = false;
 		DatabaseManager dbm1 = new DatabaseManager();
 		System.out.println("Connected to database");
 
-		//int userid = dbm1.userTableAddEntry(username);
 		boolean userExist = false;
-		String user = dbm1.userTableGetEntry(userid); //"" or otherwise
+		String user = dbm1.userTableGetEntry(userid);
 		if(!user.equals("")) {
 			userExist = true;
 		}
-		//boolean eventCheck = this.checkEventsTable(eventid, tickets); //http req
+		
 		int ticketDone = 0;
-		if(userExist/* && eventCheck*/) {
+		if(userExist) {
 			for(int i = 1; i<= tickets; i++) {
 				if(dbm1.ticketsTableAddEntry(eventid, userid, tickets) > 0) {
 					ticketDone += 1;
@@ -103,9 +112,6 @@ public class UserTicketsAddHandler {
 		}
 
 		dbm1.close();
-
-		System.out.println("return of getResult : " + ticketDone);
-
 		return correct;
 	}
 

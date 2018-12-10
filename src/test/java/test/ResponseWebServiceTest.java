@@ -7,10 +7,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import cs601.project4.AppConstants;
+import cs601.project4.InitJsonReader;
+import cs601.project4.Project4Init;
 import httpUtil.HttpConnection;
 import model.objects.AppParams;
 
@@ -20,11 +24,19 @@ import model.objects.AppParams;
  */
 public class ResponseWebServiceTest {
 
+	@Before
+	public void initialize() {
+		Project4Init init = (Project4Init) InitJsonReader.
+				project4InitJsonReader("project4Init.json", Project4Init.class);
+		AppConstants.setInit(init);
+	}
+	
+	
 	//web service  - get event list
 	@Test
 	public void getEventsTest() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/events");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/events");
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -44,7 +56,7 @@ public class ResponseWebServiceTest {
 	@Test 
 	public void getEventCreateTest() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/events/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/events/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -70,7 +82,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void postEventCreateTest1() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/events/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/events/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -78,7 +90,6 @@ public class ResponseWebServiceTest {
 		httpCon.setDoOutput(true);
 
 		httpCon.connect();
-
 
 
 		String reqBody = "{ \"userid\": 1, \"eventnAAAAame\": \"qwerty12\", \"numtickets\": 99 }";
@@ -97,7 +108,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void getEventDetailsTest() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/events/61");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/events/61");
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -116,7 +127,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void getEventDetailsTest1() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/events/2121");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/events/2121");
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -138,7 +149,8 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void getEventPurchaseTest() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/events/63/purchase/2");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathWebService()+"/events/63/purchase/7");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -163,7 +175,9 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void getEventPurchaseTest1() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/events/60/purchase/2");
+		System.out.println("path : " + AppConstants.getInit().getBasepathWebService()+"/events/60/purchase/2");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathWebService()+"/events/60/purchase/2");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -191,7 +205,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void postUserCreate() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/users/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -217,7 +231,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void postUserCreate1() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/users/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -242,7 +256,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void postUserCreate2() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/users/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -269,7 +283,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void getUserDetails() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/"+3);
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/users/"+3);
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -289,7 +303,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void getUserDetails1() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/"+77);
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/users/"+77);
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -308,7 +322,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void getUserDetails0() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/43");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/users/43");
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -329,7 +343,8 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void postUserTicketsTransfer() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/2/tickets/transfer");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathWebService()+"/users/2/tickets/transfer");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -354,7 +369,8 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void postUserTicketsTransfer1() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/6/tickets/transfer");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathWebService()+"/users/6/tickets/transfer");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -377,7 +393,8 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void postUserTicketsTransfer2() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/6/tickets/transfer");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathWebService()+"/users/6/tickets/transfer");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -400,7 +417,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void postUserTicketsTransfer3() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/654/tickets/transfer");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathWebService()+"/users/654/tickets/transfer");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");

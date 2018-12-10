@@ -2,26 +2,32 @@ package test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-
+import org.junit.Before;
 import org.junit.Test;
 
-import com.google.gson.Gson;
-
+import cs601.project4.AppConstants;
+import cs601.project4.InitJsonReader;
+import cs601.project4.Project4Init;
 import httpUtil.HttpConnection;
-import model.objects.AppParams;
 
 /**
  * @author anuragjha
  *
  */
 public class ResponseUserServiceTest {
+	
+	@Before
+	public void initialize() {
+		Project4Init init = (Project4Init) InitJsonReader.
+				project4InitJsonReader("project4Init.json", Project4Init.class);
+		AppConstants.setInit(init);
+	}
 
 	//User service  - create user - correct reqBody  2 users cannot have same username
 	@Test  
 	public void postUserCreate() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathUserService()+"/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -47,7 +53,7 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void postUserCreate1() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathUserService()+"/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -72,7 +78,7 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void postUserCreate2() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/create");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathUserService()+"/create");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -100,7 +106,7 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void getUserDetails() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/3");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathUserService()+"/3");
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -120,7 +126,7 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void getUserDetails0() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/1");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathUserService()+"/1");
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -141,7 +147,7 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void getUserDetails1() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/73");
+		httpCon = new HttpConnection(AppConstants.getInit().getBasepathUserService()+"/73");
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -161,7 +167,8 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void postUserTicketsAdd() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/3/tickets/add");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathUserService()+"/3/tickets/add");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -185,7 +192,8 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void postUserTicketsAdd1() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/99/tickets/add");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathUserService()+"/99/tickets/add");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -208,7 +216,8 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void postUserTicketsAdd2() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/1/tickets/add");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathUserService()+"/1/tickets/add");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -233,7 +242,8 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void postUserTicketsTransfer() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/3/tickets/transfer");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathUserService()+"/3/tickets/transfer");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -242,7 +252,7 @@ public class ResponseUserServiceTest {
 
 		httpCon.connect();
 
-		String reqBody = "{ \"eventid\": 63, \"tickets\": 1, \"targetuser\": 2 }";
+		String reqBody = "{ \"eventid\": 63, \"tickets\": 1, \"targetuser\": 7 }";
 		httpCon.writeRequestBody(reqBody);
 
 
@@ -257,7 +267,8 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void postUserTicketsTransfer1() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/3/tickets/transfer");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathUserService()+"/3/tickets/transfer");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -280,7 +291,8 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void postUserTicketsTransfer2() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/3/tickets/transfer");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathUserService()+"/3/tickets/transfer");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -303,7 +315,8 @@ public class ResponseUserServiceTest {
 	@Test  
 	public void postUserTicketsTransfer3() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7072/333/tickets/transfer");
+		httpCon = new HttpConnection(
+				AppConstants.getInit().getBasepathUserService()+"/333/tickets/transfer");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");

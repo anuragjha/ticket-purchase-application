@@ -25,7 +25,7 @@ import model.objects.ResultOK;
 
 /**
  * @author anuragjha
- *
+ * EventTicketsPurchaseServlet class handles request for ticket purchase
  */
 public class EventTicketsPurchaseServlet extends HttpServlet {
 
@@ -39,7 +39,6 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 		boolean isSuccess = false;
 		String result = "";
 
-		System.out.println("in doPost of EventTicketsPurchaseServlet");
 		System.out.println(req.getRequestURI());
 
 		String[] subPaths = req.getRequestURI().split("/");
@@ -63,7 +62,12 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 		dbm1.close(); // closing dbm 
 	}
 
-	
+	/**
+	 * setResponse method create response body
+	 * @param resp
+	 * @param isSuccess
+	 * @return
+	 */
 	private String setResponse(HttpServletResponse resp, boolean isSuccess) {
 		if(isSuccess) {
 			resp.setStatus(HttpServletResponse.SC_OK);
@@ -77,6 +81,13 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * getResult implements the Event tickets purchase functionality
+	 * @param userid
+	 * @param eventid
+	 * @param tickets
+	 * @return
+	 */
 	private boolean getResult(int userid, int eventid, int tickets) {
 
 		if(this.checkAndUpdateEventTable(eventid, tickets)) {
@@ -92,7 +103,12 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 		return false;
 	}
 
-
+	/**
+	 * checkAndUpdateEventTable handles update for Event side data 
+	 * @param eventid
+	 * @param tickets
+	 * @return
+	 */
 	private boolean checkAndUpdateEventTable(int eventid, int tickets) {
 
 		ResultSet result = dbm1.eventsTableGetEventDetails(eventid);  //get event detail
@@ -121,11 +137,16 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 
 
 
-
+	/**
+	 * addUserTickets sends request to User Service to update User data
+	 * @param userid
+	 * @param eventid
+	 * @param tickets
+	 * @return
+	 */
 	private boolean addUserTickets(int userid, int eventid, int tickets) {
 
 		HttpConnection httpCon = null;
-//		httpCon = new HttpConnection("http://localhost:7072/"+userid+"/tickets/add");
 		httpCon = new HttpConnection(AppConstants.getInit().
 				getBasepathUserService()+"/"+userid+"/tickets/add");
 
@@ -150,8 +171,5 @@ public class EventTicketsPurchaseServlet extends HttpServlet {
 		}
 		return false;
 	}
-
-
-
 
 }

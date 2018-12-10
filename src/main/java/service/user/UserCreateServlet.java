@@ -27,7 +27,7 @@ public class UserCreateServlet extends HttpServlet {
 
 
 	@Override
-	protected synchronized void doPost(HttpServletRequest req, HttpServletResponse resp)
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
 		String result = "";
@@ -55,7 +55,12 @@ public class UserCreateServlet extends HttpServlet {
 
 	}
 	
-
+	/**
+	 * setResponse method creates response body
+	 * @param resp
+	 * @param userid
+	 * @return
+	 */
 	private String setResponse(HttpServletResponse resp, int userid) {
 		if(userid!=0) {
 			UserId userId = new UserId(userid);
@@ -72,7 +77,11 @@ public class UserCreateServlet extends HttpServlet {
 
 
 
-
+	/**
+	 * getResult implements the Events Detail functionality
+	 * @param username
+	 * @return
+	 */
 	public int getResult(String username) {
 
 		int userid = 0;

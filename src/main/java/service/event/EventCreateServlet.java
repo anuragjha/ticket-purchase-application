@@ -23,7 +23,7 @@ import model.objects.ResultEmpty;
 
 /**
  * @author anuragjha
- *
+ * EventCreateServlet class handles Event create request
  */
 public class EventCreateServlet extends HttpServlet {
 
@@ -57,7 +57,12 @@ public class EventCreateServlet extends HttpServlet {
 
 	}
 	
-	
+	/**
+	 * setResponse method create response body
+	 * @param resp
+	 * @param eventid
+	 * @return
+	 */
 	private String setResponse(HttpServletResponse resp, int eventid) {
 		if(eventid!=0) {
 			resp.setStatus(HttpServletResponse.SC_OK);
@@ -73,11 +78,16 @@ public class EventCreateServlet extends HttpServlet {
 	}
 
 
-
+	/**
+	 * getResult implements the Events create functionality
+	 * @param eventname
+	 * @param userid
+	 * @param numtickets
+	 * @param avail
+	 * @param purchased
+	 * @return
+	 */
 	private int getResult(String eventname, int userid, int numtickets, int avail, int purchased) {
-
-//		boolean isSuccess = false;
-//		String resultJson = "";
 
 		DatabaseManager dbm1 = new DatabaseManager();
 		System.out.println("Connected to database");
@@ -89,14 +99,18 @@ public class EventCreateServlet extends HttpServlet {
 
 		dbm1.close();
 
-		System.out.println("result:::::: " + /*resultJson*/ eventid);
+		System.out.println("result : " + eventid);
 
 		return eventid;
 	}
 
+	/**
+	 * checkifUserExists checks if user is available to User Service
+	 * @param userid
+	 * @return
+	 */
 	private boolean checkifUserExists(int userid) {
 		HttpConnection httpCon = null;
-//		httpCon = new HttpConnection("http://localhost:7072/"+userid);
 		httpCon = new HttpConnection(AppConstants.getInit().getBasepathUserService()+"/"+userid);
 
 		httpCon.setRequestMethod("GET");

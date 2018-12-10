@@ -11,10 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import cs601.project4.AppConstants;
 import httpUtil.HttpConnection;
 import httpUtil.HttpReqUtil;
+import httpUtil.HttpRespUtil;
 import model.DatabaseManager;
 import model.objects.Event;
 import model.objects.Ticket;
@@ -23,7 +25,7 @@ import model.objects.UserWs;
 
 /**
  * @author anuragjha
- *
+ * UsersServicesCallerServlet class for Web Service uses User Service
  */
 public class UsersServicesCallerServlet extends HttpServlet {
 
@@ -52,11 +54,11 @@ public class UsersServicesCallerServlet extends HttpServlet {
 		System.out.println("in doPost of UsersServlet" + req.getRequestURI());
 
 		String[] subPaths = req.getPathInfo().split("/");
-		
+
 		if((subPaths.length == 2) && (subPaths[1].equals("create"))) {
 
 			this.postCreate(resp, new HttpReqUtil().httpBody(req));
-		
+
 		} else if ((subPaths.length == 4) && (subPaths[1].matches("[0-9]+")) 
 				&& subPaths[2].equals("tickets") && (subPaths[3].equals("transfer"))) {
 
@@ -70,211 +72,138 @@ public class UsersServicesCallerServlet extends HttpServlet {
 
 	///////////////////////////////////////////////////////////////////
 
+	/**
+	 * postTransfer handles request for transfer of tickets
+	 * @param resp
+	 * @param req
+	 */
 	private void postTransfer(HttpServletResponse resp, HttpServletRequest req) {
-		
-		String result = "";
-		
-		String httpBody = new HttpReqUtil().httpBody(req);
-		System.out.println("httpBody in postTransfer: " + httpBody);
 
-		//String myUrl = "http://localhost:7072"+req.getPathInfo();
+		String result = "";
+		String httpBody = new HttpReqUtil().httpBody(req);
+
 		String myUrl = AppConstants.getInit().getBasepathUserService()+req.getPathInfo();
 		HttpConnection httpConn = null;
 		httpConn = new HttpConnection(myUrl);
-		
-		httpConn.setDoOutput(true);
-		httpConn.setRequestMethod("POST");
-		httpConn.setRequestProperty("Accept-Charset", "UTF-8");
-		httpConn.setRequestProperty("Content-Type", "application/json");
 
-		httpConn.connect();
-		//sending request body(json)
-		try {
-			httpConn.getConn().getOutputStream().write(httpBody.getBytes("UTF-8")); 
-			httpConn.getConn().getOutputStream().flush();
-		} catch (IOException e1) {
-			System.out.println("Error in getting output stream");
-			e1.printStackTrace();
+		httpConn.connectPostRequest();
+
+		httpConn.writeRequestBody(httpBody);
+
+		//reading response
+		if(httpConn.readResponseCode() == 200) {
+			resp.setStatus(HttpServletResponse.SC_OK);
+			result = httpConn.readResponseBody();
+		} else {
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			result = httpConn.readErrorResponseBody();
 		}
 
-
-		// response - httpConn.readResponseBody()
-		//try {
-			if(httpConn.readResponseCode() == 200) {
-				resp.setStatus(HttpServletResponse.SC_OK);
-				result = httpConn.readResponseBody();
-			} else {
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				result = httpConn.readErrorResponseBody();
-			}
-			
-			resp.setContentType("application/json");
-			resp.setCharacterEncoding("UTF-8");
-			resp.setContentLength(result.length());
-
-			try {
-				resp.getWriter().println(result);
-				resp.getWriter().flush();
-			} catch (IOException e) {
-				System.out.println("Error in writing response");
-				e.printStackTrace();
-			}
-			
-			
-			
-			//resp.getOutputStream().println(httpConn.readResponseBody());
-//		} catch (IOException e) {
-//			System.out.println("Error in getting output stream");
-//			e.printStackTrace();
-//		}	
+		new HttpRespUtil().writeResponse(resp, result);
 
 	}
 
-
+	/**
+	 * postCreate method handles request for Users create
+	 * @param resp
+	 * @param httpBody
+	 */
 	private void postCreate(HttpServletResponse resp, String httpBody) {
-		
-		String result = "";
-		
-		System.out.println("httpBody in postCreate: " + httpBody);
 
-//		String myUrl = "http://localhost:7072/create";
+		String result = "";
+
 		String myUrl = AppConstants.getInit().getBasepathUserService()+"/create";
 		HttpConnection httpConn = null;
 		httpConn = new HttpConnection(myUrl);
-		//http.fetch(myUrl);
-		httpConn.setDoOutput(true);
-		httpConn.setRequestMethod("POST");
-		httpConn.setRequestProperty("Accept-Charset", "UTF-8");
-		httpConn.setRequestProperty("Content-Type", "application/json");
 
-		httpConn.connect();
+		httpConn.connectPostRequest();
 
-		try {
-			httpConn.getConn().getOutputStream().write(httpBody.getBytes("UTF-8")); 
-			httpConn.getConn().getOutputStream().flush();
-		} catch (IOException e1) {
-			System.out.println("Error in getting output stream");
-			e1.printStackTrace();
+		httpConn.writeRequestBody(httpBody);
+
+		//read response
+		if(httpConn.readResponseCode() == 200) {
+			resp.setStatus(HttpServletResponse.SC_OK);
+			result = httpConn.readResponseBody();
+
+		} else {
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			result = httpConn.readErrorResponseBody();
 		}
 
-
-		// response - httpConn.readResponseBody()
-		try {
-			if(httpConn.readResponseCode() == 200) {
-				resp.setStatus(HttpServletResponse.SC_OK);
-				result = httpConn.readResponseBody();
-				
-			} else {
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				result = httpConn.readErrorResponseBody();
-				System.out.println("error req body : " + result);
-	
-			}
-			
-			resp.setContentType("application/json");
-			resp.setCharacterEncoding("UTF-8");
-			resp.setContentLength(result.length());
-
-			resp.getWriter().println(result);
-			resp.getWriter().flush();
-		
-		} catch (IOException e) {
-			System.out.println("Error in getting output stream");
-			e.printStackTrace();
-		}	
-
+		new HttpRespUtil().writeResponse(resp, result);	
 	}
 
-
+	/**
+	 * getUser handles request to get user details
+	 * @param resp
+	 * @param userid
+	 */
 	private void getUser(HttpServletResponse resp, String userid) {
-		// TODO Auto-generated method stub
 
-//		String myUrl = "http://localhost:7072/"+userid;
+		String result = "";
+
 		String myUrl = AppConstants.getInit().getBasepathUserService()+"/"+userid;
 		HttpConnection http = null;
 		http = new HttpConnection(myUrl);
-		//http.fetch(myUrl);
-		http.setRequestMethod("GET");
-		http.setRequestProperty("Accept-Charset", "UTF-8");
-		http.setRequestProperty("Content-Type", "application/json");
-		http.connect();
 
-		try {
-			String userServiceResponse; 
-			resp.setContentType("application/json");
-			//resp.getOutputStream().println(http.readResponseBody());
-			
-			if(http.readResponseCode() == 200) {
-				System.out.println("in 200 ok response condition");
-				////
-				resp.setStatus(HttpServletResponse.SC_OK);
-				userServiceResponse = http.readResponseBody();
-				UserWs userWs = this.createResponseFromUserServiceResponse(userServiceResponse);
-				String finalResult = new Gson().toJson(userWs, UserWs.class);
-				////
-				
-				resp.getOutputStream().println(finalResult);
-			
-			} else {
-				System.out.println("in 400 response condition");
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				resp.getOutputStream().println(http.readErrorResponseBody());
-			
-			}
-			
-		} catch (IOException e) {
-			System.out.println("Error in getting output stream");
-			e.printStackTrace();
+		http.connectGetRequest(); 
+
+		if(http.readResponseCode() == 200) {
+			resp.setStatus(HttpServletResponse.SC_OK);
+			UserWs userWs = this.createResponseFromUserServiceResponse(http.readResponseBody());
+			result = new Gson().toJson(userWs, UserWs.class);
+		} else {
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			result = http.readErrorResponseBody();
 		}
 
+		new HttpRespUtil().writeResponse(resp, result);
 	}
 
-
+	/**
+	 * createResponseFromUserServiceResponse reformats the User Service 
+	 * 															response for details of a user
+	 * @param userServiceResponseBody
+	 * @return
+	 */
 	private UserWs createResponseFromUserServiceResponse(String userServiceResponseBody) {
 
 		User userDetails = new Gson().fromJson(userServiceResponseBody, User.class);
-		System.out.println("createResponseFromUserServiceResponse: " +
-				userDetails.getUserid() + " " + userDetails.getUsername());
-		
+
 		UserWs userWs = new UserWs(userDetails.getUserid(), userDetails.getUsername());//response object
-		
+
 		DatabaseManager dbm1 = new DatabaseManager();
 		System.out.println("Connected to database");
-		
+
 		for(Ticket ticket : userDetails.getTickets()) {
-			System.out.println("Event id: " + ticket.getEventid());
-			//////
 			userWs.addEvent(this.getEventDetails(ticket.getEventid()));
-			//////
 		}
-		
+
 		dbm1.close();
-		
+
 		return userWs;
-		
 	}
 
-
+	/**
+	 * getEventDetails method handles request for getting details of an event
+	 * @param eventid
+	 * @return
+	 */
 	private Event getEventDetails(int eventid) {
 		HttpConnection httpCon = null;
-//		httpCon = new HttpConnection("http://localhost:7071/"+eventid);
 		httpCon = new HttpConnection(AppConstants.getInit().getBasepathEventService()+"/"+eventid);
 
-		httpCon.setRequestMethod("GET");
-		httpCon.setRequestProperty("Content-Type", "application/json");
-
-		httpCon.setDoOutput(true);
-
-		httpCon.connect();
-
-		//String respStatus = httpCon.readResponseHeader().get(null).get(0);
-		Event thisEvent = new Gson().fromJson(httpCon.readResponseBody(), Event.class);
-		return thisEvent;
+		httpCon.connectGetRequest();
+		
+		try {
+			Event thisEvent = new Gson().fromJson(httpCon.readResponseBody(), Event.class);
+			return thisEvent;
+		} catch (JsonSyntaxException jse) {
+			System.out.println("Error in json syntax");
+			Event thisEvent = new Event(0, "", 0, 0, 0, 0);
+			return thisEvent;
+		}
+		
 	}
-
-
-
-
-
 
 }

@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author anuragjha
- *
+ * UserServlet handles User Details, Tickets add and Tickets transfer request
  */
 public class UserServlet extends HttpServlet {
 
@@ -20,9 +20,7 @@ public class UserServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-
-		System.out.println("in doGet of UserServlet");
-		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI() + "***" + req.getQueryString());
+		System.out.println("in doGet of UserServlet " + req.getRequestURI());
 
 		String[] subPaths = req.getPathInfo().split("/");
 
@@ -30,10 +28,8 @@ public class UserServlet extends HttpServlet {
 			
 			System.out.println("in doGet of UserServlet - GET /{userid} ");
 			
-			new UserDetailsHandler().doGet(req, resp);
-		
+			new UserDetailsHandler().doGet(req, resp);	
 		}
-
 	}
 	
 	
@@ -41,8 +37,8 @@ public class UserServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		System.out.println("in doPost of UserServlet");
-		System.out.println(req.getPathInfo() +"***"+ req.getRequestURI() + "***" + req.getQueryString());
+		System.out.println();
+		System.out.println("in doPost of UserServlet "+ req.getRequestURI());
 
 		String[] subPaths = req.getPathInfo().split("/");
 
@@ -58,9 +54,7 @@ public class UserServlet extends HttpServlet {
 			
 		} else {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		
 		}
-
 	}
 	
 	
