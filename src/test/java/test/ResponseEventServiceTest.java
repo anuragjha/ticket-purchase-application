@@ -48,7 +48,7 @@ public class ResponseEventServiceTest {
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
 
-		httpCon.setDoOutput(true);
+		//httpCon.setDoOutput(true);
 
 		httpCon.connect();
 

@@ -12,7 +12,18 @@ public class AppParams {
 	
 	
 	public AppParams() {
-		// TODO Auto-generated constructor stub
+		this.setDefaultValue();
+	}
+
+	private void setDefaultValue() {
+		userid = 0;
+		eventid = 0;
+		eventname = "";
+		numtickets = 0;
+		tickets = 0 ;
+		username = "";
+		targetuser = 0;
+		
 	}
 
 	/**

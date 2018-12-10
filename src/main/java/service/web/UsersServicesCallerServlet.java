@@ -262,17 +262,19 @@ public class UsersServicesCallerServlet extends HttpServlet {
 		http.connect();
 
 		try {
-			String userServiceResponse = http.readResponseBody();
+			String userServiceResponse; 
 			resp.setContentType("application/json");
 			//resp.getOutputStream().println(http.readResponseBody());
 			
 			if(http.readResponseCode() == 200) {
 				System.out.println("in 200 ok response condition");
 				////
+				resp.setStatus(HttpServletResponse.SC_OK);
+				userServiceResponse = http.readResponseBody();
 				UserWs userWs = this.createResponseFromUserServiceResponse(userServiceResponse);
 				String finalResult = new Gson().toJson(userWs, UserWs.class);
 				////
-				resp.setStatus(HttpServletResponse.SC_OK);
+				
 				resp.getOutputStream().println(finalResult);
 			
 			} else {

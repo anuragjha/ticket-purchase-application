@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import cs601.project4.AppConstants;
+
 /**
  * @author anuragjha
  *
@@ -32,7 +34,8 @@ public class DatabaseConnector {
 		/**
 		 * ssh -L 3306:sql.cs.usfca.edu:3306 ajha6@stargate.cs.usfca.edu   // tunnel from project folder
 		 */
-		String urlString = "jdbc:mysql://127.0.0.1:3306/"+db;
+		//////////String urlString = "jdbc:mysql://127.0.0.1:3306/"+db;
+		String urlString = AppConstants.getInit().getDbHostname()+db;
 		//Must set time zone explicitly in newer versions of mySQL.
 		String timeZoneSettings = "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 

@@ -68,7 +68,7 @@ public class ResponseWebServiceTest {
 
 	//web service  - create event - wrong reqBody
 	@Test  
-	public void getEventCreateTest1() {  
+	public void postEventCreateTest1() {  
 		HttpConnection httpCon = null;
 		httpCon = new HttpConnection("http://localhost:7070/events/create");
 
@@ -97,7 +97,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void getEventDetailsTest() {  
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/events/59");
+		httpCon = new HttpConnection("http://localhost:7070/events/61");
 
 		httpCon.setRequestMethod("GET");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -204,7 +204,7 @@ public class ResponseWebServiceTest {
 
 
 
-		String reqBody = "{ \"username\": \"Superman1\" }";
+		String reqBody = "{ \"username\": \"Superman1111\" }";
 		httpCon.writeResquestBody(reqBody);
 
 
@@ -331,7 +331,7 @@ public class ResponseWebServiceTest {
 	@Test  
 	public void postUserTicketsTransfer() {
 		HttpConnection httpCon = null;
-		httpCon = new HttpConnection("http://localhost:7070/users/6/tickets/transfer");
+		httpCon = new HttpConnection("http://localhost:7070/users/2/tickets/transfer");
 
 		httpCon.setRequestMethod("POST");
 		httpCon.setRequestProperty("Content-Type", "application/json");
@@ -340,7 +340,7 @@ public class ResponseWebServiceTest {
 
 		httpCon.connect();
 
-		String reqBody = "{ \"eventid\": 62, \"tickets\": 2, \"targetuser\": 1 }";
+		String reqBody = "{ \"eventid\": 60, \"tickets\": 1, \"targetuser\": 6 }";
 		httpCon.writeResquestBody(reqBody);
 
 

@@ -8,15 +8,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import cs601.project4.AppConstants;
+
 /**
  * @author anuragjha
  *
  */
 public class DatabaseManager {
 
-	private static final String username = "user20";
-	private static final String password = "user20"; 
-	private static final String db = "user20"; 
+	private String username = AppConstants.getInit().getUsername();
+	private String password = AppConstants.getInit().getPassword();// = "user20"; 
+	private String db = AppConstants.getInit().getDb();// = "user20"; 
+	
 	private Connection con;// = DatabaseConnector.connectToDataBase(username, password, db);
 	private PreparedStmts preparedStmts;// = new PreparedStmts(con);
 
@@ -24,7 +27,12 @@ public class DatabaseManager {
 	 * constructor
 	 */
 	public DatabaseManager() {
-		con = DatabaseConnector.connectToDataBase(username, password, db);
+		
+		
+		//System.out.println("db connect : " + username + password + db);
+
+		con = DatabaseConnector.connectToDataBase(username, 
+				password, db);
 		preparedStmts = new PreparedStmts(con);
 
 	}
@@ -37,34 +45,6 @@ public class DatabaseManager {
 		return con;
 	}
 	
-	public void setAutoCommit(boolean value) {
-		try {
-			con.setAutoCommit(value);
-			
-		} catch(SQLException e) {
-		System.out.println("Error in changing Auto Commit mode");
-			e.printStackTrace();
-		}
-	}
-	
-	public void commit() {
-		try {
-			con.commit();
-		} catch (SQLException e) {
-			System.out.println("Error in commit");
-			e.printStackTrace();
-		}
-	}
-	
-	
-	public void rollback() {
-		try {
-			con.rollback();
-		} catch (SQLException e) {
-			System.out.println("Error in rollback");
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * @return the preparedstmts
@@ -398,31 +378,6 @@ public class DatabaseManager {
 		return userid;
 	}
 
-//	private String getTicketsTableGetUsername(int userid) {
-//
-//		String username = "";
-//		ResultSet result = null;
-//
-//		PreparedStatement sqlStmt = preparedStmts.
-//		try {
-//
-//			sqlStmt.setInt(1, userid);
-//
-//			result = sqlStmt.executeQuery();
-//			if(result.next()) {
-//				username = result.getString(1);
-//			}
-//
-//			//this.getCon().close();
-//
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		return username;
-//	}
-
 
 	private ResultSet getTicketsTableGetEventidForUser(int userid) {
 		ResultSet result = null;
@@ -563,18 +518,7 @@ public class DatabaseManager {
 //		
 		dbm1.close();
 
-		
-
-
 	}
-
-
-
-
-
-
-
-
 
 
 

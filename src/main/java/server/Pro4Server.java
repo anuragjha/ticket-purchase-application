@@ -9,8 +9,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import xsample.BlockingServlet;
-
 
 /**
  * @author anuragjha
@@ -92,10 +90,10 @@ public class Pro4Server {
 
 	public static void main(String[] args) {
 
-		Pro4Server ps = new Pro4Server(7070);
-		ps.initialize(10, 100, 120);
-		ps.addMapping(BlockingServlet.class, "/status");
-		ps.start();
+//		Pro4Server ps = new Pro4Server(7070);
+//		ps.initialize(10, 100, 120);
+//		//ps.addMapping(BlockingServlet.class, "/status");
+//		ps.start();
 	}
 
 }

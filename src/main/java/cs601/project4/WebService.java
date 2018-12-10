@@ -5,42 +5,79 @@ import service.web.EventsServicesCallerServlet;
 import service.web.UsersServicesCallerServlet;
 
 /**
-Web Front End - The web front end will implement an external web service API for the 
-application and will support APIs for the following operations:
-
-# Get a list of all events -->> GET /events
-# Create a new event -->> POST /events/create
-# Get details about a specific event -->> GET /events/{eventid}
-# Purchase tickets for an event -->> POST /events/{eventid}/purchase/{userid}
-# Create a user -->> POST /users/create
-# See a user's information, including details of 
-all events for which the user has purchased tickets -->> GET /users/{userid}
-# Transfer tickets from one user to another -->> POST /users/{userid}/tickets/transfer
- */
-
-/**
  *
  * @author anuragjha
- *
+ * Web service class starts the web service
  */
 public class WebService {
-
-	public WebService() {
-
-	}
-
 	
-	public static void main(String[] args) {
-		
+	private static Project4Init project4Init;
+	private static Project4Logger p4Logger;
+	
+	
+	/**
+	 * constructor
+	 * @param init
+	 */
+	public WebService(Project4Init init) {
+		project4Init = init;
+		this.initializeLogger();
+	}
+	
+	
+	/**
+	 * @return the webInit
+	 */
+	public static Project4Init getProject4Init() {
+		return project4Init;
+	}
+	
+	
+	/**
+	 * initializeLogger method opens the logger to be used
+	 */
+	private void initializeLogger() {
+		Project4Logger.initialize("Web Service - " + project4Init.getPortWS(), project4Init.getLoggerFile());
+	}
+	
+	
+	/**
+	 * startApplication method binds the application to the port, where it listens to client request
+	 * @param port
+	 */
+	private void startApplication() {
 		System.out.println("Web Service");
-		Pro4Server server = new Pro4Server(7070);
-		server.initialize(10, 100, 120);
+		
+		Pro4Server server = new Pro4Server(project4Init.getPortWS());
+		server.initialize(project4Init.getMinThreads(), project4Init.getMaxThreads(), 
+				project4Init.getTimeout());
 		
 		server.addMapping(EventsServicesCallerServlet.class, "/events/*");
 		server.addMapping(UsersServicesCallerServlet.class, "/users/*");
 		
 		server.start();
+	}
+	
+	public static void main(String[] args) {
 		
+		Project4Init init;
+		
+		if(new CmdLineArgsValidator().check(args))	{
+			//reading configuration file content into Project4Init object
+			init = (Project4Init) InitJsonReader.
+					project4InitJsonReader(args[0], Project4Init.class);
+			AppConstants.setInit(init);
+		} else {
+			init = null;
+			System.out.println("Unable to initialize, exiting system");
+			System.exit(1);
+		}
+		
+		WebService webService = new WebService(init);
+
+		webService.startApplication();
+
+		Project4Logger.close();
 	}
 
 }

@@ -54,7 +54,7 @@ public class EventCreateServlet extends HttpServlet {
 			AppParams appParams = new HttpReqUtil().reqParamsFromJsonBody(req);////////  !!!!!!!! ///
 
 			//TODO : add a event in database
-			if((appParams.getEventname() != null) && (appParams.getNumtickets() > 0) && 
+			if((!appParams.getEventname().equals("")) && (appParams.getNumtickets() > 0) && 
 					(appParams.getUserid() > 0)) {
 
 
