@@ -1,11 +1,7 @@
 Ticket Purchase application - Service-Oriented Architecture
 ===========================================================
 
-#### Final Code and Deployment Due - During interactive grading appointment scheduled during (or before) finals week. Details will be posted on slack.
-
-#### Checkpoint Due - December 5, 2018 - All students will be required to demonstrate their progress on or before the last day of class - December 5, 2018. Students who fail to demonstrate reasonable progress before this checkpoint will not receive credit for the Project Checkpoint criterion.
-
-For this project you will implement a service-oriented version of a ticket purchase application (i.e., your own EventBrite!). 
+For this project we implemented a service-oriented version of a ticket purchase application (i.e., like EventBrite!). 
 
 ### Overview
 
