@@ -1,5 +1,5 @@
-Project 4 Option 2 - Service-Oriented Architecture
-==================================================
+Ticket Purchase application - Service-Oriented Architecture
+===========================================================
 
 #### Final Code and Deployment Due - During interactive grading appointment scheduled during (or before) finals week. Details will be posted on slack.
 
